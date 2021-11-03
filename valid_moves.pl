@@ -11,7 +11,7 @@
 
 % cell(BugType, Row, Column, Color, StackPosition, InGame)
 cell(1, 1, 1, 1, 1, 1).
-% cell(1, 2, 1, 1, 1, 1).
+cell(1, 2, 1, 1, 1, 1).
 
 valid_moves_queen(cell(_, Row, Column, _, _, _), ValidMoves) :-
     R1 is Row - 1, C1 is Column,     (cell(_, R1, C1, _, _, _) -> append([], VM1);           append([[[R1, C1]]], VM1)),
@@ -126,3 +126,53 @@ ant_moves(cell(_, Row, Column, _, _, _), Moves, ValidMoves) :-
 
 
 valid_moves_ladybug(cell(_, Row, Column, _, _, _), ValidMoves) :-
+    ladybug_3_moves(cell(_, Row, Column, _, _, _), 3, [], ValidMoves).
+
+ladybug_3_moves(cell(_, Row, Column, _, _, _), 0, Moves, ValidMoves) :-
+    append([[[Row, Column]], Moves], ValidMoves).
+
+ladybug_3_moves(cell(_, Row, Column, _, _, _), 1, Moves, ValidMoves) :-
+    J1 is 0,
+
+    R1 is Row - 1, C1 is Column,     
+    (not(cell(_, R1, C1, _, _, _)) -> ladybug_3_moves(cell(_, R1, C1, _, _, _), J1, Moves, VM1); append([Moves], VM1)),
+
+    R2 is Row - 1, C2 is Column + 1, 
+    (not(cell(_, R2, C2, _, _, _)) -> ladybug_3_moves(cell(_, R2, C2, _, _, _), J1, VM1, VM2); append([[], VM1], VM2)),
+
+    R3 is Row,     C3 is Column - 1, 
+    (not(cell(_, R3, C3, _, _, _)) -> ladybug_3_moves(cell(_, R3, C3, _, _, _), J1, VM2, VM3); append([[], VM2], VM3)),
+
+    R4 is Row,     C4 is Column + 1,
+    (not(cell(_, R4, C4, _, _, _)) -> spider_3_moves(cell(_, R4, C4, _, _, _), J1, VM3, VM4); append([[], VM3], VM4)),
+
+    R5 is Row + 1, C5 is Column - 1,
+    (not(cell(_, R5, C5, _, _, _)) -> spider_3_moves(cell(_, R5, C5, _, _, _), J1, VM4, VM5); append([[], VM4], VM5)),
+
+    R6 is Row + 1, C6 is Column,
+    (not(cell(_, R6, C6, _, _, _)) -> spider_3_moves(cell(_, R6, C6, _, _, _), J1, VM5, VM6); append([[], VM5], VM6)),
+
+    sort(VM6, ValidMoves).
+
+ladybug_3_moves(cell(_, Row, Column, _, _, _), Jump, Moves, ValidMoves) :-
+    J1 is Jump - 1,
+
+    R1 is Row - 1, C1 is Column,
+    (cell(_, R1, C1, _, _, _) -> ladybug_3_moves(cell(_, R1, C1, _, _, _), J1, Moves, VM1); append([Moves], VM1)),
+
+    R2 is Row - 1, C2 is Column + 1,
+    (cell(_, R2, C2, _, _, _) -> ladybug_3_moves(cell(_, R2, C2, _, _, _), J1, VM1, VM2); append([[], VM1], VM2)),
+
+    R3 is Row,     C3 is Column - 1,
+    (cell(_, R3, C3, _, _, _) -> ladybug_3_moves(cell(_, R3, C3, _, _, _), J1, VM2, VM3); append([[], VM2], VM3)),
+
+    R4 is Row,     C4 is Column + 1, 
+    (cell(_, R4, C4, _, _, _) -> ladybug_3_moves(cell(_, R4, C4, _, _, _), J1, VM3, VM4); append([[], VM3], VM4)),
+
+    R5 is Row + 1, C5 is Column - 1,
+    (cell(_, R5, C5, _, _, _) -> ladybug_3_moves(cell(_, R5, C5, _, _, _), J1, VM4, VM5); append([[], VM4], VM5)),
+
+    R6 is Row + 1, C6 is Column,
+    (cell(_, R6, C6, _, _, _) -> ladybug_3_moves(cell(_, R6, C6, _, _, _), J1, VM5, VM6); append([[], VM5], VM6)),
+
+    sort(VM6, ValidMoves).
