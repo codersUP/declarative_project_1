@@ -13,6 +13,20 @@
 cell(1, 1, 1, 1, 1, 1).
 cell(1, 2, 1, 1, 1, 1).
 
+valid_moves(cell('queen', Row, Column, _, _, _), ValidMoves) :-
+    valid_moves_queen(cell(_, Row, Column, _, _, _), ValidMoves).
+valid_moves(cell('beetle', Row, Column, _, _, _), ValidMoves) :-
+    valid_moves_beetle(cell(_, Row, Column, _, _, _), ValidMoves).
+valid_moves(cell('grasshopper', Row, Column, _, _, _), ValidMoves) :-
+    valid_moves_grasshopper(cell(_, Row, Column, _, _, _), ValidMoves).
+valid_moves(cell('spider', Row, Column, _, _, _), ValidMoves) :-
+    valid_moves_spider(cell(_, Row, Column, _, _, _), ValidMoves).
+valid_moves(cell('ant', Row, Column, _, _, _), ValidMoves) :-
+    valid_moves_ant(cell(_, Row, Column, _, _, _), ValidMoves).
+valid_moves(cell('ladybug', Row, Column, _, _, _), ValidMoves) :-
+    valid_moves_ladybug(cell(_, Row, Column, _, _, _), ValidMoves).
+
+
 valid_moves_queen(cell(_, Row, Column, _, _, _), ValidMoves) :-
     R1 is Row - 1, C1 is Column,     (cell(_, R1, C1, _, _, _) -> append([], VM1);           append([[[R1, C1]]], VM1)),
     R2 is Row - 1, C2 is Column + 1, (cell(_, R2, C2, _, _, _) -> append([VM1], VM2);        append([[[R2, C2]], VM1], VM2)),
