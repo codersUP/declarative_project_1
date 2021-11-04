@@ -2,7 +2,7 @@
 
 cell(1, 1, 1, 1, 1, 1).
 cell(1, 2, 1, 1, 1, 1).
-cell(1, 4, 1, 1, 1, 1).
+cell(1, 4, 1, 2, 1, 1).
 
 delete(Element,[Element|Tail],Tail).
 
@@ -32,3 +32,18 @@ hive_dfs(cell(_, Row, Column, _, _, _), Cells, UntouchedCells) :-
     (member([R5, C5], Cells4) -> (delete([R5, C5], Cells4, Cells52), hive_dfs(cell(_, R5, C5, _, _, _), Cells52, Cells5)); append([Cells4], Cells5)),
     R6 is Row + 1, C6 is Column,
     (member([R6, C6], Cells5) -> (delete([R6, C6], Cells5, Cells62), hive_dfs(cell(_, R6, C6, _, _, _), Cells62, UntouchedCells)); append([Cells5], UntouchedCells)).
+
+
+hive_colocation_color(cell(_, Row, Column, Color, _, _)) :-
+    R1 is Row - 1, C1 is Column,
+    not((cell(_, R1, C1, Color1, _, _), Color1 =\= Color)),
+    R2 is Row - 1, C2 is Column + 1, 
+    not((cell(_, R2, C2, Color2, _, _), Color2 =\= Color)),
+    R3 is Row,     C3 is Column - 1,
+    not((cell(_, R3, C3, Color3, _, _), Color3 =\= Color)),
+    R4 is Row,     C4 is Column + 1,
+    not((cell(_, R4, C4, Color4, _, _), Color4 =\= Color)),
+    R5 is Row + 1, C5 is Column - 1,
+    not((cell(_, R5, C5, Color5, _, _), Color5 =\= Color)),
+    R6 is Row + 1, C6 is Column,
+    not((cell(_, R6, C6, Color6, _, _), Color6 =\= Color)).
