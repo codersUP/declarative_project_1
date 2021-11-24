@@ -1,8 +1,7 @@
 % cell(BugType, Row, Column, Color, StackPosition, InGame)
 
-cell(1, 1, 1, 1, 1, 1).
-cell(1, 2, 1, 1, 1, 1).
-cell(1, 4, 1, 2, 1, 1).
+:- module(hive_consitent, [hive_consitent/0]).
+:- use_module(game).
 
 delete(Element,[Element|Tail],Tail).
 

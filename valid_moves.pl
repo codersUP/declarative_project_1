@@ -10,20 +10,21 @@
 %      (1, -1) (1, 0)
 
 % cell(BugType, Row, Column, Color, StackPosition, InGame)
-cell(1, 1, 1, 1, 1, 1).
-cell(1, 2, 1, 1, 1, 1).
+:- module(valid_moves, [valid_moves/2]).
+:- use_module(game).
 
-valid_moves(cell('queen', Row, Column, _, _, _), ValidMoves) :-
+
+valid_moves(cell(queen, Row, Column, _, _, _), ValidMoves) :-
     valid_moves_queen(cell(_, Row, Column, _, _, _), ValidMoves).
-valid_moves(cell('beetle', Row, Column, _, _, _), ValidMoves) :-
+valid_moves(cell(beetle, Row, Column, _, _, _), ValidMoves) :-
     valid_moves_beetle(cell(_, Row, Column, _, _, _), ValidMoves).
-valid_moves(cell('grasshopper', Row, Column, _, _, _), ValidMoves) :-
+valid_moves(cell(grasshopper, Row, Column, _, _, _), ValidMoves) :-
     valid_moves_grasshopper(cell(_, Row, Column, _, _, _), ValidMoves).
-valid_moves(cell('spider', Row, Column, _, _, _), ValidMoves) :-
+valid_moves(cell(spider, Row, Column, _, _, _), ValidMoves) :-
     valid_moves_spider(cell(_, Row, Column, _, _, _), ValidMoves).
-valid_moves(cell('ant', Row, Column, _, _, _), ValidMoves) :-
+valid_moves(cell(ant, Row, Column, _, _, _), ValidMoves) :-
     valid_moves_ant(cell(_, Row, Column, _, _, _), ValidMoves).
-valid_moves(cell('ladybug', Row, Column, _, _, _), ValidMoves) :-
+valid_moves(cell(ladybug, Row, Column, _, _, _), ValidMoves) :-
     valid_moves_ladybug(cell(_, Row, Column, _, _, _), ValidMoves).
 
 
