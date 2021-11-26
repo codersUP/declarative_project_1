@@ -24,7 +24,7 @@ trying_moves(cell(Bug, Row, Column, Color, StackPosition, InGame), [[MovesHR, Mo
     try_move([MovesHR, MovesHC], ValidMoves1),
     make_move(cell(Bug, MovesHR, MovesHC, Color, StackPosition, InGame), [Row, Column]).
 
-    trying_moves(cell(Bug, Row, Column, _, StackPosition, InGame), MovesT, ValidMoves2),
+    trying_moves(cell(Bug, Row, Column, Color, StackPosition, InGame), MovesT, ValidMoves2),
     append(ValidMoves1, ValidMoves2, FilterMoves).
 
 
