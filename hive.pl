@@ -1,6 +1,6 @@
 % cell(BugType, Row, Column, Color, StackPosition, InGame)
 
-:- module(hive_consitent, [hive_consitent/0]).
+:- module(hive_consitent, [hive_consitent/0, not_neighbors/2]).
 :- use_module(game).
 
 delete(Element,[Element|Tail],Tail).
