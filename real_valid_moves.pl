@@ -8,11 +8,11 @@
 :- use_module(hive).
 
 
-real_valid_moves(cell(Bug, Row, Column, _, StackPosition, InGame), []) :- 
-    not(can_move(cell(Bug, Row, Column, _, StackPosition, InGame))).
+real_valid_moves(cell(Bug, Row, Column, Color, StackPosition, InGame), []) :- 
+    not(can_move(cell(Bug, Row, Column, Color, StackPosition, InGame))).
 
-real_valid_moves(cell(Bug, Row, Column, _, StackPosition, InGame), RealValidMoves) :- 
-    can_move(cell(Bug, Row, Column, _, StackPosition, InGame)),
+real_valid_moves(cell(Bug, Row, Column, Color, StackPosition, InGame), RealValidMoves) :- 
+    can_move(cell(Bug, Row, Column, Color, StackPosition, InGame)),
     valid_moves(cell(Bug, Row, Column, _, StackPosition, InGame), ValidMoves),
     trying_moves(cell(Bug, Row, Column, _, StackPosition, InGame), ValidMoves, RealValidMoves).
     
