@@ -13,4 +13,4 @@ make_move(cell(Bug, Row, Column, Color, StackPosition, true), [MoveR, MoveC]) :-
     
 
 get_first_or_0([], 0).
-get_first_or_0([LH, LT], LH).
+get_first_or_0([LH|_], LH).
