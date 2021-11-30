@@ -2,14 +2,14 @@
 :- use_module(game).
 
 change_turn(white) :-
-    play_now(black),
-    retract(play_now(black)),
-    assertz(play_now(white)).
+    color_now(black),
+    retract(color_now(black)),
+    assertz(color_now(white)).
 
 change_turn(black) :-
-    play_now(white),
-    retract(play_now(white)),
-    assertz(play_now(black)).
+    color_now(white),
+    retract(color_now(white)),
+    assertz(color_now(black)).
 
 advance_turn() :-
     turn(X),
