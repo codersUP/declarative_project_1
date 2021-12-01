@@ -1,26 +1,28 @@
-:- module(game, [cell/6, color_now/1, turn/1]).
+:- module(game, [cell/6, color_now/1, turn/1, last_move/1]).
 :- use_module(change_turn).
 :- use_module(bug_can_put).
 :- use_module(bug_can_move).
+:- use_module(bug_can_power).
 :- use_module(play_can_do).
 :- use_module(possible_colocation).
 :- use_module(real_valid_moves).
+:- use_module(power).
 :- use_module(make_move).
 :- use_module(win).
 
 
 cell(queen, 1,  1, white,  0, true).
-cell(ant,   1,  2, white,  0, true).
-cell(ant,   0,  3, white,  0, true).
-cell(ant,  -1,  3, white,  0, true).
-cell(ant,  -1,  2, white,  0, true).
-cell(ant,   1,  0, white,  0, true).
-% cell(ant,   0,  0, white,  0, true).
+% cell(ant,   1,  2, white,  0, true).
+% cell(ant,   0,  3, white,  0, true).
+% cell(ant,  -1,  3, white,  0, true).
+% cell(ant,  -1,  2, white,  0, true).
+% cell(ant,   1,  0, white,  0, true).
+cell(pillbug,   2,  1, white,  0, true).
 % cell(ant,   0,  0, white,  0, true).
 % cell(ant,   0,  0, white,  0, true).
 % cell(ant,   0,  0, white,  0, true).
 
-cell(queen, 0,  2, black,  0, true).
+cell(queen, 1,  2, black,  0, true).
 % cell(ant,   0,  0, black, -1, false).
 % cell(ant,   0,  0, black, -2, false).
 % cell(ant,   0,  0, black, -3, false).
@@ -40,6 +42,10 @@ color_now(white).
 turn(1).
 
 :- dynamic turn/1.
+
+last_move(cell(queen, 1, 2, black, 0, true)).
+
+:- dynamic last_move/1.
 
 
 enter_game() :-
@@ -81,13 +87,14 @@ play(put, Color, Turn) :-
     possible_colocation(Color, PossiblesColocations),
     write("Select colocation: " + PossiblesColocations + "\n"),
     read(ColocationSelected),
-    nth1(ColocationSelected, PossiblesColocations, Colocation),
-    write("Colocation selected: " + Colocation + "\n"),
+    nth1(ColocationSelected, PossiblesColocations, [ColocationR, ColocationC]),
+    write("Colocation selected: " + [ColocationR, ColocationC] + "\n"),
 
     select_cell_to_put(Color, Bug, [B, R, C, Color, Sp]),
-    make_move(cell(B, R, C, Color, Sp, false), Colocation).
+    make_move(cell(B, R, C, Color, Sp, false), [ColocationR, ColocationC]),
 
-
+    retract(last_move(cell(_, _, _, _, _, _))),
+    assertz(last_move(cell(B, ColocationR, ColocationC, Color, Sp, true))).
 
 play(move, Color, _) :-
     bug_can_move(Color, BugCanMove),
@@ -99,7 +106,36 @@ play(move, Color, _) :-
     real_valid_moves(cell(B, R, C, Color, Sp, true), RealValidMoves),
     write("Select move to do " + RealValidMoves + "\n"),
     read(MoveToDo),
-    nth1(MoveToDo, RealValidMoves, Move),
-    write("Move selected: " + Move + "\n"),
+    nth1(MoveToDo, RealValidMoves, [MoveR, MoveC]),
+    write("Move selected: " + [MoveR, MoveC] + "\n"),
 
-    make_move(cell(B, R, C, Color, Sp, true), Move).
+    make_move(cell(B, R, C, Color, Sp, true), [MoveR, MoveC]),
+
+    retract(last_move(cell(_, _, _, _, _, _))),
+    assertz(last_move(cell(B, MoveR, MoveC, Color, Sp, true))).
+
+play(power, Color, _) :-
+    bug_can_power(Color, BugCanPower),
+    write("Select bug to use power: " + BugCanPower + "\n"),
+    read(BugToPower),
+    nth1(BugToPower, BugCanPower, [B, R, C, Color, Sp]),
+    write("Bug selected: " + [B, R, C, Color, Sp] + "\n"),
+
+    pillbug_power_can_apply(cell(B, R, C, Color, Sp, true), BugsPowerCanApply),
+    write("Select bug to apply power: " + BugsPowerCanApply + "\n"),
+    read(BugToApplyPower),
+    nth1(BugToApplyPower, BugsPowerCanApply, [BugR, BugC]),
+    write("Bug selected: " + [BugR, BugC] + "\n"),
+
+    not_neighbors(cell(B, R, C, Color, Sp, true), PossiblesColocations),
+    write("Select colocation: " + PossiblesColocations + "\n"),
+    read(ColocationSelected),
+    nth1(ColocationSelected, PossiblesColocations, [ColocationR, ColocationC]),
+    write("Colocation selected: " + [ColocationR, ColocationC] + "\n"),
+
+    cell(BugP, BugR, BugC, BugColor, BugSp, true),
+
+    make_move(cell(BugP, BugR, BugC, BugColor, BugSp, true), [ColocationR, ColocationC]),
+
+    retract(last_move(cell(_, _, _, _, _, _))),
+    assertz(last_move(cell(B, ColocationR, ColocationC, Color, Sp, true))).

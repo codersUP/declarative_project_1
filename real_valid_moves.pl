@@ -1,6 +1,6 @@
 % cell(BugType, Row, Column, Color, StackPosition, InGame)
 
-:- module(real_valid_moves, [real_valid_moves/2]).
+:- module(real_valid_moves, [real_valid_moves/2, try_move/2]).
 
 :- use_module(can_move).
 :- use_module(game).

@@ -10,7 +10,7 @@
 %      (1, -1) (1, 0)
 
 % cell(BugType, Row, Column, Color, StackPosition, InGame)
-:- module(valid_moves, [valid_moves/2]).
+:- module(valid_moves, [valid_moves/2, neighbors/2]).
 :- use_module(game).
 
 
@@ -26,6 +26,8 @@ valid_moves(cell(ant, Row, Column, _, _, _), ValidMoves) :-
     valid_moves_ant(cell(_, Row, Column, _, _, _), ValidMoves).
 valid_moves(cell(ladybug, Row, Column, _, _, _), ValidMoves) :-
     valid_moves_ladybug(cell(_, Row, Column, _, _, _), ValidMoves).
+valid_moves(cell(pillbug, Row, Column, _, _, _), ValidMoves) :-
+    valid_moves_queen(cell(_, Row, Column, _, _, _), ValidMoves).
 
 
 valid_moves_queen(cell(_, Row, Column, _, _, _), ValidMoves) :-

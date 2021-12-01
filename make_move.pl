@@ -2,6 +2,7 @@
 
 :- module(make_move, [make_move/2]).
 :- use_module(game).
+:- use_module(utils).
 
 make_move(cell(Bug, Row, Column, Color, StackPosition, InGame), [MoveR, MoveC]) :-
     findall(SP, cell(_, MoveR, MoveC, _, SP, true), SPs),
@@ -10,7 +11,3 @@ make_move(cell(Bug, Row, Column, Color, StackPosition, InGame), [MoveR, MoveC]) 
     get_first_or_0(SPs_sorted_reverse, SP_greater),
     retract(cell(Bug, Row, Column, Color, StackPosition, InGame)),
     assertz(cell(Bug, MoveR, MoveC, Color, SP_greater, true)).
-    
-
-get_first_or_0([], 0).
-get_first_or_0([LH|_], LH).
