@@ -1,5 +1,5 @@
 :- module(win, [game_finished/1]).
-:- use_module(hive).
+:- use_module(possible_colocation).
 :- use_module(game).
 
 game_finished(tie) :-

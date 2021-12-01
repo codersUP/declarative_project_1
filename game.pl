@@ -6,29 +6,30 @@
 :- use_module(possible_colocation).
 :- use_module(real_valid_moves).
 :- use_module(make_move).
+:- use_module(win).
 
 
-cell(queen,0,  0, white, -1, false).
-cell(ant,  0,  0, white, -1, false).
-cell(ant,  0,  0, white, -2, false).
-cell(ant,  0,  0, white, -3, false).
-cell(ant,  0,  0, white, -4, false).
-cell(ant,  0,  0, white, -5, false).
-cell(ant,  0,  0, white, -6, false).
-cell(ant,  0,  0, white, -7, false).
-cell(ant,  0,  0, white, -8, false).
-cell(ant,  0,  0, white, -9, false).
+cell(queen, 1,  1, white,  0, true).
+cell(ant,   1,  2, white,  0, true).
+cell(ant,   0,  3, white,  0, true).
+cell(ant,  -1,  3, white,  0, true).
+cell(ant,  -1,  2, white,  0, true).
+cell(ant,   1,  0, white,  0, true).
+% cell(ant,   0,  0, white,  0, true).
+% cell(ant,   0,  0, white,  0, true).
+% cell(ant,   0,  0, white,  0, true).
+% cell(ant,   0,  0, white,  0, true).
 
-cell(queen, 0,  0, black, -1, false).
-cell(ant,   0,  0, black, -1, false).
-cell(ant,   0,  0, black, -2, false).
-cell(ant,   0,  0, black, -3, false).
-cell(ant,   0,  0, black, -4, false).
-cell(ant,   0,  0, black, -5, false).
-cell(ant,   0,  0, black, -6, false).
-cell(ant,   0,  0, black, -7, false).
-cell(ant,   0,  0, black, -8, false).
-cell(ant,   0,  0, black, -9, false).
+cell(queen, 0,  2, black,  0, true).
+% cell(ant,   0,  0, black, -1, false).
+% cell(ant,   0,  0, black, -2, false).
+% cell(ant,   0,  0, black, -3, false).
+% cell(ant,   0,  0, black, -4, false).
+% cell(ant,   0,  0, black, -5, false).
+% cell(ant,   0,  0, black, -6, false).
+% cell(ant,   0,  0, black, -7, false).
+% cell(ant,   0,  0, black, -8, false).
+% cell(ant,   0,  0, black, -9, false).
 
 :- dynamic cell/6.
 
@@ -40,7 +41,17 @@ turn(1).
 
 :- dynamic turn/1.
 
-infinity_loop() :-
+
+enter_game() :-
+    game_finished(Result),
+    Result = tie,
+    write("TIE").
+
+enter_game() :-
+    game_finished(Result),
+    write("Winner " + Result).
+
+enter_game() :-
     color_now(Color),
     turn(Turn),
     write("Color: " + Color + " Turn: " + Turn + "\n"),
@@ -57,8 +68,7 @@ infinity_loop() :-
     advance_turn(),
 
     write("----------------------------------------------------------\n"),
-
-    infinity_loop().
+    enter_game().
 
 
 play(put, Color, Turn) :-

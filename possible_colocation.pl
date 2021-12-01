@@ -1,4 +1,4 @@
-:- module(possible_colocation, [possible_colocation/2]).
+:- module(possible_colocation, [possible_colocation/2, not_neighbors/2]).
 :- use_module(game).
 
 
