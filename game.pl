@@ -18,8 +18,8 @@ cell(queen, 1,  1, white,  0, true).
 % cell(ant,  -1,  2, white,  0, true).
 % cell(ant,   1,  0, white,  0, true).
 cell(pillbug,   2,  1, white,  0, true).
-% cell(ant,   0,  0, white,  0, true).
-% cell(ant,   0,  0, white,  0, true).
+cell(mosquito,   2,  0, white,  0, true).
+cell(ant,   1,  0, white,  0, true).
 % cell(ant,   0,  0, white,  0, true).
 
 cell(queen, 1,  2, black,  0, true).

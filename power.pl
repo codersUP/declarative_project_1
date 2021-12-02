@@ -9,7 +9,7 @@
 :- use_module(real_valid_moves).
 
 
-pillbug_power_can_apply(cell(pillbug, Row, Column, _, _, true), PowerCanApply) :-
+pillbug_power_can_apply(cell(_, Row, Column, _, _, true), PowerCanApply) :-
     neighbors(cell(_, Row, Column, _, _, _), Neighbors),
     filter_list_by_stack_only_one(Neighbors, NeighborsWithOnlyOne),
     filter_list_not_last_move(NeighborsWithOnlyOne, FilteredNotLastMove),

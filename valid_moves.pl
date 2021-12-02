@@ -10,8 +10,9 @@
 %      (1, -1) (1, 0)
 
 % cell(BugType, Row, Column, Color, StackPosition, InGame)
-:- module(valid_moves, [valid_moves/2, neighbors/2]).
+:- module(valid_moves, [valid_moves/2, neighbors/2, bug_type_of_neighbors/2]).
 :- use_module(game).
+:- use_module(stack).
 
 
 valid_moves(cell(queen, Row, Column, _, _, _), ValidMoves) :-
@@ -28,6 +29,8 @@ valid_moves(cell(ladybug, Row, Column, _, _, _), ValidMoves) :-
     valid_moves_ladybug(cell(_, Row, Column, _, _, _), ValidMoves).
 valid_moves(cell(pillbug, Row, Column, _, _, _), ValidMoves) :-
     valid_moves_queen(cell(_, Row, Column, _, _, _), ValidMoves).
+valid_moves(cell(mosquito, Row, Column, _, StackPosition, _), ValidMoves) :-
+    valid_moves_mosquito(cell(_, Row, Column, _, StackPosition, _), ValidMoves).
 
 
 valid_moves_queen(cell(_, Row, Column, _, _, _), ValidMoves) :-
@@ -193,3 +196,34 @@ ladybug_3_moves(cell(_, Row, Column, _, _, _), Jump, Moves, ValidMoves) :-
     (cell(_, R6, C6, _, _, true) -> ladybug_3_moves(cell(_, R6, C6, _, _, _), J1, VM5, VM6); append([[], VM5], VM6)),
 
     sort(VM6, ValidMoves).
+
+
+valid_moves_mosquito(cell(_, Row, Column, _, StackPosition, _), ValidMoves) :-
+    StackPosition > 0,
+    valid_moves_beetle(cell(_, Row, Column, _, _, _), ValidMoves).
+
+valid_moves_mosquito(cell(_, Row, Column, _, StackPosition, _), ValidMoves) :-
+    StackPosition = 0,
+    neighbors(cell(_, Row, Column, _, _, _), Neighbors),
+    bug_type_of_neighbors(Neighbors, BugTypeNeighbors),
+    valid_moves_mosquito2(cell(_, Row, Column, _, _, _), BugTypeNeighbors, ValidMoves).
+
+
+valid_moves_mosquito2(cell(_, _, _, _, _, _), [], []).
+
+valid_moves_mosquito2(cell(_, Row, Column, _, _, _), [mosquito|BugTypeT], Moves) :-
+    valid_moves_mosquito2(cell(_, Row, Column, _, _, _), BugTypeT, Moves).
+
+valid_moves_mosquito2(cell(_, Row, Column, _, _, _), [BugTypeH|BugTypeT], Moves) :-
+    valid_moves(cell(BugTypeH, Row, Column, _, _, _), Moves1),
+    valid_moves_mosquito2(cell(_, Row, Column, _, _, _), BugTypeT, Moves2),
+    append(Moves1, Moves2, Moves3),
+    sort(Moves3, Moves).
+
+bug_type_of_neighbors([], []).
+
+bug_type_of_neighbors([[NHR, NHC]|NeighborsT], BugType) :-
+    bug_on_top(NHR, NHC, Bug1),
+    bug_type_of_neighbors(NeighborsT, Bug2),
+    append([Bug1], Bug2, BugType1),
+    sort(BugType1, BugType).
