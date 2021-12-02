@@ -34,12 +34,21 @@ valid_moves(cell(mosquito, Row, Column, _, StackPosition, _), ValidMoves) :-
 
 
 valid_moves_queen(cell(_, Row, Column, _, _, _), ValidMoves) :-
-    R1 is Row - 1, C1 is Column,     (cell(_, R1, C1, _, _, true) -> append([], VM1);           append([[[R1, C1]]], VM1)),
-    R2 is Row - 1, C2 is Column + 1, (cell(_, R2, C2, _, _, true) -> append([VM1], VM2);        append([[[R2, C2]], VM1], VM2)),
-    R3 is Row,     C3 is Column - 1, (cell(_, R3, C3, _, _, true) -> append([VM2], VM3);        append([[[R3, C3]], VM2], VM3)),
-    R4 is Row,     C4 is Column + 1, (cell(_, R4, C4, _, _, true) -> append([VM3], VM4);        append([[[R4, C4]], VM3], VM4)),
-    R5 is Row + 1, C5 is Column - 1, (cell(_, R5, C5, _, _, true) -> append([VM4], VM5);        append([[[R5, C5]], VM4], VM5)),
-    R6 is Row + 1, C6 is Column,     (cell(_, R6, C6, _, _, true) -> append([VM5], ValidMoves); append([[[R6, C6]], VM5], ValidMoves)).
+    R1 is Row - 1, C1 is Column,     moves_queen([Row, Column], [R1, C1], VM1),
+    R2 is Row - 1, C2 is Column + 1, moves_queen([Row, Column], [R2, C2], VM2),
+    R3 is Row,     C3 is Column - 1, moves_queen([Row, Column], [R3, C3], VM3),
+    R4 is Row,     C4 is Column + 1, moves_queen([Row, Column], [R4, C4], VM4),
+    R5 is Row + 1, C5 is Column - 1, moves_queen([Row, Column], [R5, C5], VM5),
+    R6 is Row + 1, C6 is Column,     moves_queen([Row, Column], [R6, C6], VM6),
+    append([VM1, VM2, VM3, VM4, VM5, VM6], ValidMoves).
+
+moves_queen([R, C], [RD, CD], []) :-
+    cell(_, RD, CD, _, _, true);
+    not(can_enter([R, C], [RD, CD])).
+
+moves_queen([R, C], [RD, CD], [[RD, CD]]) :-
+    not(cell(_, RD, CD, _, _, true)),
+    can_enter([R, C], [RD, CD]).
 
 
 valid_moves_beetle(cell(_, Row, Column, _, _, _), ValidMoves) :-
