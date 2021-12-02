@@ -120,29 +120,41 @@ valid_moves_ant(cell(_, Row, Column, _, _, _), ValidMoves) :-
     ant_moves(cell(_, Row, Column, _, _, _), [], ValidMoves).
 
 ant_moves(cell(_, Row, Column, _, _, _), Moves, ValidMoves) :-
-    R1 is Row - 1, C1 is Column,     
-    neighbors(cell(_, R1, C1, _, _, _), L1),
-    ((not(member([R1, C1], Moves)), not(cell(_, R1, C1, _, _, true)), not(L1 = [])) -> (append([[[R1, C1]], Moves], VM11), ant_moves(cell(_, R1, C1, _, _, _), VM11, VM1)); append([Moves], VM1)),
+    R1 is Row - 1, C1 is Column,
+    ant_moves2([R1, C1], Moves, VM1),
 
-    R2 is Row - 1, C2 is Column + 1, 
-    neighbors(cell(_, R2, C2, _, _, _), L2),
-    ((not(member([R2, C2], VM1)), not(cell(_, R2, C2, _, _, true)), not(L2 = [])) -> (append([[[R2, C2]], VM1], VM21), ant_moves(cell(_, R2, C2, _, _, _), VM21, VM2)); append([[], VM1], VM2)),
+    R2 is Row - 1, C2 is Column + 1,
+    ant_moves2([R2, C2], VM1, VM2),
 
-    R3 is Row,     C3 is Column - 1, 
-    neighbors(cell(_, R3, C3, _, _, _), L3),
-    ((not(member([R3, C3], VM2)), not(cell(_, R3, C3, _, _, true)), not(L3 = [])) -> (append([[[R3, C3]], VM2], VM31), ant_moves(cell(_, R3, C3, _, _, _), VM31, VM3)); append([[], VM2], VM3)),
+    R3 is Row,     C3 is Column - 1,
+    ant_moves2([R3, C3], VM2, VM3),
 
-    R4 is Row,     C4 is Column + 1, 
-    neighbors(cell(_, R4, C4, _, _, _), L4),
-    ((not(member([R4, C4], VM3)), not(cell(_, R4, C4, _, _, true)), not(L4 = [])) -> (append([[[R4, C4]], VM3], VM41), ant_moves(cell(_, R4, C4, _, _, _), VM41, VM4)); append([[], VM3], VM4)),
+    R4 is Row,     C4 is Column + 1,
+    ant_moves2([R4, C4], VM3, VM4),
 
-    R5 is Row + 1, C5 is Column - 1, 
-    neighbors(cell(_, R5, C5, _, _, _), L5),
-    ((not(member([R5, C5], VM4)), not(cell(_, R5, C5, _, _, true)), not(L5 = [])) -> (append([[[R5, C5]], VM4], VM51), ant_moves(cell(_, R5, C5, _, _, _), VM51, VM5)); append([[], VM4], VM5)),
+    R5 is Row + 1, C5 is Column - 1,
+    ant_moves2([R5, C5], VM4, VM5),
 
     R6 is Row + 1, C6 is Column,
-    neighbors(cell(_, R6, C6, _, _, _), L6),
-    ((not(member([R6, C6], VM5)), not(cell(_, R6, C6, _, _, true)), not(L6 = [])) -> (append([[[R6, C6]], VM5], VM61), ant_moves(cell(_, R1, C1, _, _, _), VM61, ValidMoves)); append([[], VM5], ValidMoves)).
+    ant_moves2([R6, C6], VM5, ValidMoves).
+
+
+ant_moves2([R, C], Moves, Moves) :-
+    not(
+        (neighbors(cell(_, R, C, _, _, _), Neighbors),
+        not(member([R, C], Moves)),
+        not(cell(_, R, C, _, _, true)),
+        not(Neighbors = []))
+        ).
+
+ant_moves2([R, C], Moves, Result) :-
+    neighbors(cell(_, R, C, _, _, _), Neighbors),
+    not(member([R, C], Moves)),
+    not(cell(_, R, C, _, _, true)),
+    not(Neighbors = []),
+    append([[R, C]], Moves, Moves1),
+    ant_moves(cell(_, R, C, _, _, _), Moves1, Result).
+
 
 
 valid_moves_ladybug(cell(_, Row, Column, _, _, _), ValidMoves) :-
