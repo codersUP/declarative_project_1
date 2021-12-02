@@ -63,23 +63,29 @@ valid_moves_beetle(cell(_, Row, Column, _, _, _), ValidMoves) :-
 
 valid_moves_grasshopper(cell(_, Row, Column, _, _, _), ValidMoves) :-
     % left
-    grasshopper_line(cell(_, Row, Column, _, _, _), 0, -1, [], VM1),
+    grasshopper_line(cell(_, Row, Column, _, _, _), 0, -1, VM1),
     % right
-    grasshopper_line(cell(_, Row, Column, _, _, _), 0, 1, VM1, VM2),
+    grasshopper_line(cell(_, Row, Column, _, _, _), 0,  1, VM2),
     % up left
-    grasshopper_line(cell(_, Row, Column, _, _, _), -1, 0, VM2, VM3),
+    grasshopper_line(cell(_, Row, Column, _, _, _), -1, 0, VM3),
     % up right
-    grasshopper_line(cell(_, Row, Column, _, _, _), -1, 1, VM3, VM4),
+    grasshopper_line(cell(_, Row, Column, _, _, _), -1, 1, VM4),
     % down left
-    grasshopper_line(cell(_, Row, Column, _, _, _), 1, -1, VM4, VM5),
+    grasshopper_line(cell(_, Row, Column, _, _, _), 1, -1, VM5),
     % down right
-    grasshopper_line(cell(_, Row, Column, _, _, _), 1, 0, VM5, ValidMoves).
+    grasshopper_line(cell(_, Row, Column, _, _, _), 1,  0, VM6),
 
-grasshopper_line(cell(_, Row, Column, _, _, _), R, C, Moves, ValidMoves) :-
-    R1 is Row + R, C1 is Column + C, (cell(_, R1, C1, _, _, true) -> 
-        grasshopper_line(cell(_, R1, C1, _, _, _), R, C, Moves, ValidMoves);
-        append([[[R1, C1]], Moves], ValidMoves)).
+    append([VM1, VM2, VM3, VM4, VM5, VM6], ValidMoves).
+
+grasshopper_line(cell(_, Row, Column, _, _, _), R, C, [[R1, C1]]) :-
+    R1 is Row + R, C1 is Column + C,
+    not(cell(_, R1, C1, _, _, true)).
     
+grasshopper_line(cell(_, Row, Column, _, _, _), R, C, ValidMoves) :-
+    R1 is Row + R, C1 is Column + C,
+    cell(_, R1, C1, _, _, true),
+    grasshopper_line(cell(_, R1, C1, _, _, _), R, C, ValidMoves).
+
 
 valid_moves_spider(cell(_, Row, Column, _, _, _), ValidMoves) :-
     spider_3_moves(cell(_, Row, Column, _, _, _), 3, [], ValidMoves).
