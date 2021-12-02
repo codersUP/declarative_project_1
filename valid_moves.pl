@@ -239,3 +239,76 @@ bug_type_of_neighbors([[NHR, NHC]|NeighborsT], BugType) :-
     bug_type_of_neighbors(NeighborsT, Bug2),
     append([Bug1], Bug2, BugType1),
     sort(BugType1, BugType).
+
+
+can_enter([R1, C1], [R2, C2]) :-
+    R2 is R1,
+    C2 is C1 + 1,
+
+    RE1 is R1 - 1,
+    CE1 is C1 + 1,
+
+    RE2 is R1 + 1,
+    CE2 is C1,
+
+    not((cell(_, RE1, CE1, _, _, true) , cell(_, RE2, CE2, _, _, true))).
+
+can_enter([R1, C1], [R2, C2]) :-
+    R2 is R1 - 1,
+    C2 is C1 + 1,
+
+    RE1 is R1 - 1,
+    CE1 is C1,
+
+    RE2 is R1,
+    CE2 is C1 + 1,
+
+    not((cell(_, RE1, CE1, _, _, true) , cell(_, RE2, CE2, _, _, true))).
+
+can_enter([R1, C1], [R2, C2]) :-
+    R2 is R1 - 1,
+    C2 is C1,
+
+    RE1 is R1,
+    CE1 is C1 - 1,
+
+    RE2 is R1 - 1,
+    CE2 is C1 + 1,
+
+    not((cell(_, RE1, CE1, _, _, true) , cell(_, RE2, CE2, _, _, true))).
+
+can_enter([R1, C1], [R2, C2]) :-
+    R2 is R1,
+    C2 is C1 - 1,
+
+    RE1 is R1 + 1,
+    CE1 is C1 - 1,
+
+    RE2 is R1 - 1,
+    CE2 is C1,
+
+    not((cell(_, RE1, CE1, _, _, true) , cell(_, RE2, CE2, _, _, true))).
+
+can_enter([R1, C1], [R2, C2]) :-
+    R2 is R1 + 1,
+    C2 is C1 - 1,
+
+    RE1 is R1 + 1,
+    CE1 is C1,
+
+    RE2 is R1,
+    CE2 is C1 - 1,
+
+    not((cell(_, RE1, CE1, _, _, true) , cell(_, RE2, CE2, _, _, true))).
+
+can_enter([R1, C1], [R2, C2]) :-
+    R2 is R1 + 1,
+    C2 is C1,
+
+    RE1 is R1,
+    CE1 is C1 + 1,
+
+    RE2 is R1 + 1,
+    CE2 is C1 - 1,
+
+    not((cell(_, RE1, CE1, _, _, true) , cell(_, RE2, CE2, _, _, true))).
