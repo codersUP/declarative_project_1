@@ -88,38 +88,48 @@ grasshopper_line(cell(_, Row, Column, _, _, _), R, C, ValidMoves) :-
 
 
 valid_moves_spider(cell(_, Row, Column, _, _, _), ValidMoves) :-
-    spider_3_moves(cell(_, Row, Column, _, _, _), 3, [], ValidMoves).
+    spider_3_moves(cell(_, Row, Column, _, _, _), 3, ValidMoves).
 
-spider_3_moves(cell(_, Row, Column, _, _, _), Jump, Moves, ValidMoves) :-
-    (Jump = 0 -> append([[[Row, Column]], Moves], ValidMoves);(
+spider_3_moves(cell(_, Row, Column, _, _, _), 0, [[Row, Column]]).
+
+spider_3_moves(cell(_, Row, Column, _, _, _), Jump, ValidMoves) :-
     J1 is Jump - 1,
     
-    R1 is Row - 1, C1 is Column,     
-    neighbors(cell(_, R1, C1, _, _, _), L1),
-    ((not(cell(_, R1, C1, _, _, true)), not(L1 = [])) -> spider_3_moves(cell(_, R1, C1, _, _, _), J1, Moves, VM1); append([Moves], VM1)),
+    R1 is Row - 1, C1 is Column,
+    spider_3_moves2([Row, Column], [R1, C1], J1, VM1),
 
-    R2 is Row - 1, C2 is Column + 1, 
-    neighbors(cell(_, R2, C2, _, _, _), L2),
-    ((not(cell(_, R2, C2, _, _, true)), not(L2 = [])) -> spider_3_moves(cell(_, R2, C2, _, _, _), J1, VM1, VM2); append([[], VM1], VM2)),
+    R2 is Row - 1, C2 is Column + 1,
+    spider_3_moves2([Row, Column], [R2, C2], J1, VM2),
 
-    R3 is Row,     C3 is Column - 1, 
-    neighbors(cell(_, R3, C3, _, _, _), L3),
-    ((not(cell(_, R3, C3, _, _, true)), not(L3 = [])) -> spider_3_moves(cell(_, R3, C3, _, _, _), J1, VM2, VM3); append([[], VM2], VM3)),
+    R3 is Row,     C3 is Column - 1,
+    spider_3_moves2([Row, Column], [R3, C3], J1, VM3),
 
-    R4 is Row,     C4 is Column + 1, 
-    neighbors(cell(_, R4, C4, _, _, _), L4),
-    ((not(cell(_, R4, C4, _, _, tru)), not(L4 = [])) -> spider_3_moves(cell(_, R4, C4, _, _, _), J1, VM3, VM4); append([[], VM3], VM4)),
+    R4 is Row,     C4 is Column + 1,
+    spider_3_moves2([Row, Column], [R4, C4], J1, VM4),
 
-    R5 is Row + 1, C5 is Column - 1, 
-    neighbors(cell(_, R5, C5, _, _, _), L5),
-    ((not(cell(_, R5, C5, _, _, true)), not(L5 = [])) -> spider_3_moves(cell(_, R5, C5, _, _, _), J1, VM4, VM5); append([[], VM4], VM5)),
+    R5 is Row + 1, C5 is Column - 1,
+    spider_3_moves2([Row, Column], [R5, C5], J1, VM5),
 
     R6 is Row + 1, C6 is Column,
-    neighbors(cell(_, R6, C6, _, _, _), L6),
-    ((not(cell(_, R6, C6, _, _, true)), not(L6 = [])) -> spider_3_moves(cell(_, R6, C6, _, _, _), J1, VM5, VM6); append([[], VM5], VM6)),
+    spider_3_moves2([Row, Column], [R6, C6], J1, VM6),
 
-    sort(VM6, ValidMoves)
-    )).
+    append([VM1, VM2, VM3, VM4, VM5, VM6], VM7),
+
+    sort(VM7, ValidMoves).
+
+
+spider_3_moves2([R, C], [RD, CD], _, []) :-
+    neighbors(cell(_, RD, CD, _, _, _), Neighbors),
+    Neighbors = [];
+    cell(_, RD, CD, _, _, true);
+    not(can_enter([R, C], [RD, CD])).
+
+spider_3_moves2([R, C], [RD, CD], Jump, ValidMoves) :-
+    neighbors(cell(_, RD, CD, _, _, _), Neighbors),
+    not(Neighbors = []),
+    not(cell(_, RD, CD, _, _, true)),
+    can_enter([R, C], [RD, CD]),
+    spider_3_moves(cell(_, RD, CD, _, _, _), Jump, ValidMoves).
 
 
 neighbors(cell(_, Row, Column, _, _, _), Neighbors) :-
@@ -191,13 +201,13 @@ ladybug_3_moves(cell(_, Row, Column, _, _, _), 1, Moves, ValidMoves) :-
     (not(cell(_, R3, C3, _, _, true)) -> ladybug_3_moves(cell(_, R3, C3, _, _, _), J1, VM2, VM3); append([[], VM2], VM3)),
 
     R4 is Row,     C4 is Column + 1,
-    (not(cell(_, R4, C4, _, _, true)) -> spider_3_moves(cell(_, R4, C4, _, _, _), J1, VM3, VM4); append([[], VM3], VM4)),
+    (not(cell(_, R4, C4, _, _, true)) -> ladybug_3_moves(cell(_, R4, C4, _, _, _), J1, VM3, VM4); append([[], VM3], VM4)),
 
     R5 is Row + 1, C5 is Column - 1,
-    (not(cell(_, R5, C5, _, _, true)) -> spider_3_moves(cell(_, R5, C5, _, _, _), J1, VM4, VM5); append([[], VM4], VM5)),
+    (not(cell(_, R5, C5, _, _, true)) -> ladybug_3_moves(cell(_, R5, C5, _, _, _), J1, VM4, VM5); append([[], VM4], VM5)),
 
     R6 is Row + 1, C6 is Column,
-    (not(cell(_, R6, C6, _, _, true)) -> spider_3_moves(cell(_, R6, C6, _, _, _), J1, VM5, VM6); append([[], VM5], VM6)),
+    (not(cell(_, R6, C6, _, _, true)) -> ladybug_3_moves(cell(_, R6, C6, _, _, _), J1, VM5, VM6); append([[], VM5], VM6)),
 
     sort(VM6, ValidMoves).
 
