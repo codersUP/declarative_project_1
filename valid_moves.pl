@@ -93,6 +93,7 @@ valid_moves_spider(cell(_, Row, Column, _, _, _), ValidMoves) :-
 spider_3_moves(cell(_, Row, Column, _, _, _), 0, [[Row, Column]]).
 
 spider_3_moves(cell(_, Row, Column, _, _, _), Jump, ValidMoves) :-
+    Jump > 0,
     J1 is Jump - 1,
     
     R1 is Row - 1, C1 is Column,
@@ -212,6 +213,7 @@ ladybug_3_moves(cell(_, Row, Column, _, _, _), 1, ValidMoves) :-
     sort(VM7, ValidMoves).
 
 ladybug_3_moves(cell(_, Row, Column, _, _, _), Jump, ValidMoves) :-
+    Jump > 1,
     J1 is Jump - 1,
 
     R1 is Row - 1, C1 is Column,
