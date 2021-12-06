@@ -12,7 +12,7 @@
 
 
 cell(queen, 1,  0, white,  0, true).
-% cell(ant,   1,  2, white,  0, true).
+cell(ant,   1,  1, white,  0, true).
 % cell(ant,   0,  3, white,  0, true).
 % cell(ant,  -1,  3, white,  0, false).
 % cell(ladybug,  0,  0, white,  0, true).
@@ -23,7 +23,7 @@ cell(queen, 1,  0, white,  0, true).
 % cell(ant,   2,  0, white,  0, true).
 
 cell(queen, 2,  -1, black,  0, true).
-% cell(ant,   0,  0, black, -1, false).
+cell(ant,   2,   0, black, 0, true).
 % cell(ant,   0,  0, black, -2, false).
 % cell(ant,   0,  0, black, -3, false).
 % cell(ant,   0,  0, black, -4, false).
