@@ -11,15 +11,15 @@
 :- use_module(win).
 
 
-cell(queen, 1,  1, white,  0, true).
+cell(queen, 1,  0, white,  0, true).
 % cell(ant,   1,  2, white,  0, true).
 % cell(ant,   0,  3, white,  0, true).
-% cell(ant,  -1,  3, white,  0, true).
-cell(ladybug,  0,  0, white,  0, true).
-cell(spider,   1,  0, white,  0, true).
-cell(grasshopper,   2,  1, white,  0, true).
+% cell(ant,  -1,  3, white,  0, false).
+% cell(ladybug,  0,  0, white,  0, true).
+% cell(spider,   1,  0, white,  0, true).
+% cell(grasshopper,   2,  1, white,  0, true).
 % cell(mosquito,   3,  0, white,  0, true).
-% cell(ant,   0,  1, white,  0, true).
+% cell(pillbug,   0,  1, white,  0, true).
 % cell(ant,   2,  0, white,  0, true).
 
 cell(queen, 2,  -1, black,  0, true).
@@ -142,4 +142,4 @@ play(power, Color, _) :-
     make_move(cell(BugP, BugR, BugC, BugColor, BugSp, true), [ColocationR, ColocationC]),
 
     retract(last_move(cell(_, _, _, _, _, _))),
-    assertz(last_move(cell(B, ColocationR, ColocationC, Color, Sp, true))).
+    assertz(last_move(cell(BugP, ColocationR, ColocationC, BugColor, BugSp, true))).
