@@ -15,14 +15,14 @@ cell(queen, 1,  1, white,  0, true).
 % cell(ant,   1,  2, white,  0, true).
 % cell(ant,   0,  3, white,  0, true).
 % cell(ant,  -1,  3, white,  0, true).
-% cell(ant,  -1,  2, white,  0, true).
-% cell(ant,   1,  0, white,  0, true).
-cell(pillbug,   2,  1, white,  0, true).
-cell(mosquito,   2,  0, white,  0, true).
-cell(ant,   1,  0, white,  0, true).
-% cell(ant,   0,  0, white,  0, true).
+cell(ladybug,  0,  0, white,  0, true).
+cell(spider,   1,  0, white,  0, true).
+cell(grasshopper,   2,  1, white,  0, true).
+% cell(mosquito,   3,  0, white,  0, true).
+% cell(ant,   0,  1, white,  0, true).
+% cell(ant,   2,  0, white,  0, true).
 
-cell(queen, 1,  2, black,  0, true).
+cell(queen, 2,  -1, black,  0, true).
 % cell(ant,   0,  0, black, -1, false).
 % cell(ant,   0,  0, black, -2, false).
 % cell(ant,   0,  0, black, -3, false).
@@ -43,7 +43,7 @@ turn(1).
 
 :- dynamic turn/1.
 
-last_move(cell(queen, 1, 2, black, 0, true)).
+last_move(cell(queen, 2, -1, black, 0, true)).
 
 :- dynamic last_move/1.
 
@@ -62,13 +62,7 @@ enter_game() :-
     turn(Turn),
     write("Color: " + Color + " Turn: " + Turn + "\n"),
 
-    play_can_do(Color, PlayCanDo),
-    write("Select play to do " + PlayCanDo + "\n"),
-    read(PlayToDo),
-    nth1(PlayToDo, PlayCanDo, Play),
-    write("Play selected " + Play + "\n"),
-
-    play(Play, Color, Turn),
+    select_play(Color),
 
     change_turn(_),
     advance_turn(),
@@ -76,6 +70,16 @@ enter_game() :-
     write("----------------------------------------------------------\n"),
     enter_game().
 
+
+select_play(Color) :-
+    play_can_do(Color, PlayCanDo),
+    write("Select play to do " + PlayCanDo + "\n"),
+    read(PlayToDo),
+    nth1(PlayToDo, PlayCanDo, Play),
+    write("Play selected " + Play + "\n"),
+    turn(Turn),
+    
+    play(Play, Color, Turn).
 
 play(put, Color, Turn) :-
     bug_can_put(Color, Turn, BugCanPut),
