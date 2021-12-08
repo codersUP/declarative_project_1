@@ -61,22 +61,17 @@ retract_play_ai(Color, [power, [_, _, _, _, _], [BugToApplyPowerR, BugToApplyPow
 
 
 
-heuristic(Color, _, Play, _, 100) :-
+heuristic(Color, _, Play, _, X) :-
     last_move(cell(LB, LR, LC, LColor, LSp, LInGame)),
     make_play_ai(Color, Play),
     game_result(Result),
     retract_play_ai(Color, Play),
     retract(last_move(cell(_, _, _, _, _, _))),
     assertz(last_move(cell(LB, LR, LC, LColor, LSp, LInGame))),
-    Result = Color.
+    heuristic2(Result, Color, X).
 
-heuristic(Color, _, Play, _, -100) :-
-    last_move(cell(LB, LR, LC, LColor, LSp, LInGame)),
-    make_play_ai(Color, Play),
-    game_result(Result),
-    retract_play_ai(Color, Play),
-    retract(last_move(cell(_, _, _, _, _, _))),
-    assertz(last_move(cell(LB, LR, LC, LColor, LSp, LInGame))),
+heuristic2(X, X, 100).
+heuristic2(Result, Color, -100) :-
     not(Result = continue),
     not(Result = Color).
 
