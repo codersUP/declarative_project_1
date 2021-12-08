@@ -17,10 +17,10 @@ bug_can_move2([[B, R, C, Color, Sp]|CellsT], BugCanMove) :-
     append(BugCanMove1, BugCanMove2, BugCanMove).
     
     
-bug_can_move3([B, R, C, Color, Sp], []) :-
+bug_can_move3([B, R, C, Color, Sp], X) :-
     real_valid_moves(cell(B, R, C, Color, Sp, true), RealValidMoves),
-    RealValidMoves = [].
+    bug_can_move3_2(RealValidMoves, [B, R, C, Color, Sp], X).
 
-bug_can_move3([B, R, C, Color, Sp], [[B, R, C, Color, Sp]]) :-
-    real_valid_moves(cell(B, R, C, Color, Sp, true), RealValidMoves),
-    not(RealValidMoves = []).
+bug_can_move3_2([], _, []).
+
+bug_can_move3_2([_|_], X, [X]).
