@@ -50,12 +50,8 @@ init_game() :-
 
 enter_game() :-
     game_finished(Result),
-    Result = tie,
-    write("TIE").
-
-enter_game() :-
-    game_finished(Result),
-    write("Winner " + Result).
+    enter_game_2(Result).
+    
 
 enter_game() :-
     color_now(Color),
@@ -72,6 +68,12 @@ enter_game() :-
 
     write("----------------------------------------------------------\n"),
     enter_game().
+
+enter_game_2(tie) :-
+    write("TIE").
+
+enter_game(Result) :-
+    write("Winner " + Result).
 
 
 begin_play(human, Color, Turn) :-
