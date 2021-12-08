@@ -25,13 +25,13 @@ bug_can_power2([[B, R, C, Color, Sp]|CellsT], BugCanPower) :-
     append(BugCanPower1, BugCanPower2, BugCanPower).
     
     
-bug_can_power3([B, R, C, Color, Sp], []) :-
+bug_can_power3([B, R, C, Color, Sp], X) :-
     pillbug_power_can_apply(cell(B, R, C, Color, Sp, true), PowerCanApply),
-    PowerCanApply = [].
+    bug_can_power3_2(PowerCanApply, [B, R, C, Color, Sp], X).
 
-bug_can_power3([B, R, C, Color, Sp], [[B, R, C, Color, Sp]]) :-
-    pillbug_power_can_apply(cell(B, R, C, Color, Sp, true), PowerCanApply),
-    not(PowerCanApply = []).
+bug_can_power3_2([], _, []).
+
+bug_can_power3_2([_|_], X, [X]).
 
 
 search_for_neighbors_pillbug([], []).
@@ -41,12 +41,13 @@ search_for_neighbors_pillbug([[B, R, C, Color, Sp]|CellsT], Filtered) :-
     search_for_neighbors_pillbug(CellsT, Filtered2),
     append(Filtered1, Filtered2, Filtered).
 
-search_for_neighbors_pillbug2([_, R, C, _, _], []):-
+search_for_neighbors_pillbug2([B, R, C, Color, Sp], X):-
     neighbors(cell(_, R, C, _, _, _), Neighbors),
     bug_type_of_neighbors(Neighbors, BugTypeNeighbors),
+    search_for_neighbors_pillbug2_2(BugTypeNeighbors, [B, R, C, Color, Sp], X).
+
+search_for_neighbors_pillbug2_2(BugTypeNeighbors, _, []) :-
     not(member(pillbug, BugTypeNeighbors)).
 
-search_for_neighbors_pillbug2([B, R, C, Color, Sp], [[B, R, C, Color, Sp]]):-
-    neighbors(cell(_, R, C, _, _, _), Neighbors),
-    bug_type_of_neighbors(Neighbors, BugTypeNeighbors),
+search_for_neighbors_pillbug2_2(BugTypeNeighbors, X, [X]) :-
     member(pillbug, BugTypeNeighbors).
