@@ -34,4 +34,4 @@ filter_list_by_stack_only_one([[RH, RC]| Tail], Filtered) :-
 filter_by_stack_only_one(Row, Column, [[Row, Column]]) :-
     stack_with_only_one(Row, Column),!.
 
-filter_by_stack_only_one(Row, Column, []).
+filter_by_stack_only_one(_, _, []).

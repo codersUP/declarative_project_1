@@ -1,8 +1,21 @@
-:- module(bug_can_power, [bug_can_power/2]).
+:- module(bug_can_power, [bug_can_power/2, bug_can_power_only_one/2]).
 :- use_module(game).
 :- use_module(real_valid_moves).
 :- use_module(power).
 :- use_module(valid_moves).
+
+
+bug_can_power_only_one(Color, BugCanPower1) :-
+    B = pillbug,
+    findall([B, R, C, Color, Sp], cell(B, R, C, Color, Sp, true), Cells),
+    bug_can_power2_only_one(Cells, BugCanPower1),
+    BugCanPower1 = [_|_].
+
+bug_can_power_only_one(Color, BugCanPower2) :-
+    B2 = mosquito,
+    findall([B2, R2, C2, Color, Sp2], cell(B2, R2, C2, Color, Sp2, true), Cells2),
+    search_for_neighbors_pillbug(Cells2, Cells2Pillbugs),
+    bug_can_power2_only_one(Cells2Pillbugs, BugCanPower2).
 
 
 bug_can_power(Color, BugCanPower) :-
@@ -26,12 +39,22 @@ bug_can_power2([[B, R, C, Color, Sp]|CellsT], BugCanPower) :-
     
     
 bug_can_power3([B, R, C, Color, Sp], X) :-
-    pillbug_power_can_apply(cell(B, R, C, Color, Sp, true), PowerCanApply),
+    pillbug_power_can_apply_only_one(cell(B, R, C, Color, Sp, true), PowerCanApply),
     bug_can_power3_2(PowerCanApply, [B, R, C, Color, Sp], X).
 
 bug_can_power3_2([], _, []).
 
 bug_can_power3_2([_|_], X, [X]).
+
+
+bug_can_power2_only_one([], []).
+
+bug_can_power2_only_one([[B, R, C, Color, Sp]|_], [[B, R, C, Color, Sp]]) :-
+    pillbug_power_can_apply_only_one(cell(B, R, C, Color, Sp, true), PowerCanApply),
+    PowerCanApply = [_|_].
+
+bug_can_power2_only_one([[_, _, _, _, _]|CellsT], X)  :-
+    bug_can_power2_only_one(CellsT, X).
 
 
 search_for_neighbors_pillbug([], []).

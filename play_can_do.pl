@@ -17,7 +17,7 @@ can_move(Color, []) :-
 
 can_move(Color, X) :-
     cell(queen, _, _, Color, _, true),
-    bug_can_move(Color, BugCanMove),
+    bug_can_move_only_one(Color, BugCanMove),
     can_move2(BugCanMove, X).
 
 can_move2([], []).
@@ -37,7 +37,7 @@ can_power(Color, []) :-
 
 can_power(Color, X) :-
     cell(queen, _, _, Color, _, true),
-    bug_can_power(Color, BugCanPower),
+    bug_can_power_only_one(Color, BugCanPower),
     can_power2(BugCanPower, X).
 
 can_power2([], []).
