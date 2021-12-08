@@ -1,4 +1,4 @@
-:- module(game, [cell/6, color_now/1, turn/1, last_move/1]).
+:- module(game, [cell/6, color_now/1, turn/1, last_move/1, player/2]).
 :- use_module(change_turn).
 :- use_module(bug_can_put).
 :- use_module(bug_can_move).
@@ -9,29 +9,14 @@
 :- use_module(power).
 :- use_module(make_move).
 :- use_module(win).
+:- use_module(init_cells).
+:- use_module(expantions).
+:- use_module(ai).
+:- use_module(players).
 
 
-cell(queen, 1,  0, white,  0, true).
-cell(ant,   1,  1, white,  0, true).
-% cell(ant,   0,  3, white,  0, true).
-% cell(ant,  -1,  3, white,  0, false).
-% cell(ladybug,  0,  0, white,  0, true).
-% cell(spider,   1,  0, white,  0, true).
-% cell(grasshopper,   2,  1, white,  0, true).
-% cell(mosquito,   3,  0, white,  0, true).
-% cell(pillbug,   0,  1, white,  0, true).
-% cell(ant,   2,  0, white,  0, true).
-
-cell(queen, 2,  -1, black,  0, true).
-cell(ant,   2,   0, black, 0, true).
-% cell(ant,   0,  0, black, -2, false).
-% cell(ant,   0,  0, black, -3, false).
-% cell(ant,   0,  0, black, -4, false).
-% cell(ant,   0,  0, black, -5, false).
-% cell(ant,   0,  0, black, -6, false).
-% cell(ant,   0,  0, black, -7, false).
-% cell(ant,   0,  0, black, -8, false).
-% cell(ant,   0,  0, black, -9, false).
+cell(queen, 0,  0, white,  -1, false).
+cell(queen, 0,  0, black,  -1, false).
 
 :- dynamic cell/6.
 
@@ -43,9 +28,24 @@ turn(1).
 
 :- dynamic turn/1.
 
-last_move(cell(queen, 2, -1, black, 0, true)).
+last_move(cell(quee, 0, 0, white, -1, false)).
 
 :- dynamic last_move/1.
+
+player(1, human).
+player(2, human).
+
+:- dynamic player/2.
+
+init_game() :-
+    Bugs = [ant, grasshopper, beetle, spider],
+    Amounts = [3, 3, 2, 2],
+
+    init_game_cells(Bugs, Amounts),
+    select_expantions(),
+
+    select_players(),
+    enter_game().
 
 
 enter_game() :-
@@ -60,9 +60,12 @@ enter_game() :-
 enter_game() :-
     color_now(Color),
     turn(Turn),
+    player_turn(Turn, Player),
+
     write("Color: " + Color + " Turn: " + Turn + "\n"),
 
-    select_play(Color),
+    player(Player, PlayerType),
+    begin_play(PlayerType, Color, Turn),
 
     change_turn(_),
     advance_turn(),
@@ -71,13 +74,20 @@ enter_game() :-
     enter_game().
 
 
-select_play(Color) :-
+begin_play(human, Color, Turn) :-
+    select_play(Color, Turn).
+
+begin_play(ai, Color, Turn) :-
+    best_play_ai(Color, Turn, 2, _, Play),
+    make_play_ai(Color, Play).
+
+
+select_play(Color, Turn) :-
     play_can_do(Color, PlayCanDo),
     write("Select play to do " + PlayCanDo + "\n"),
     read(PlayToDo),
     nth1(PlayToDo, PlayCanDo, Play),
     write("Play selected " + Play + "\n"),
-    turn(Turn),
     
     play(Play, Color, Turn).
 
