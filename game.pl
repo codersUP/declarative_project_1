@@ -57,10 +57,9 @@ enter_game() :-
     color_now(Color),
     turn(Turn),
     player_turn(Turn, Player),
-
-    write("Color: " + Color + " Turn: " + Turn + "\n"),
-
     player(Player, PlayerType),
+
+    write("Player turn: " + Player + " Player type: " + PlayerType + " Color: " + Color + " Turn: " + Turn + "\n"),
     begin_play(PlayerType, Color, Turn),
 
     change_turn(_),
@@ -80,8 +79,10 @@ begin_play(human, Color, Turn) :-
     select_play(Color, Turn).
 
 begin_play(ai, Color, Turn) :-
-    best_play_ai(Color, Turn, 2, _, Play),
-    make_play_ai(Color, Play).
+    write("hola"),
+    best_play_ai(Color, Turn, 0, _, Play),
+    write(Play + "\n").
+    % make_play_ai(Color, Play).
 
 
 select_play(Color, Turn) :-

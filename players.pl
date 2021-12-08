@@ -8,7 +8,7 @@ select_players() :-
 
 
 select_player(N) :-
-    Selections = [bot, human],
+    Selections = [ai, human],
 
     write("Select player" + N + "\n" + Selections + "\n"),
 
