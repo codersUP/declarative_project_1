@@ -28,8 +28,7 @@ trying_moves(cell(Bug, Row, Column, Color, StackPosition, InGame), [[MovesHR, Mo
     append(ValidMoves1, ValidMoves2, FilterMoves).
 
 
-try_move(_, []) :-
-    not(hive_consitent()).
-
 try_move(X, [X]) :-
-    hive_consitent().
+    hive_consitent(),!.
+
+try_move(_, []).
