@@ -54,9 +54,9 @@ filter_bugs_dont_break_hive_move(_, [], []).
 
 filter_bugs_dont_break_hive_move([BugR, BugC], [[PMRH, PMCH]|PMT], FilteredMoves) :-
     cell(Bug, BugR, BugC, Color, StackPosition, true),
-    make_move(cell(Bug, BugR, BugC, Color, StackPosition, true), [PMRH, PMCH]),
+    make_move(cell(Bug, BugR, BugC, Color, StackPosition, true), [PMRH, PMCH], _),
     try_move([BugR, BugC], Filtered1),
-    make_move(cell(Bug, PMRH, PMCH, Color, StackPosition, true), [BugR, BugC]),
+    make_move(cell(Bug, PMRH, PMCH, Color, StackPosition, true), [BugR, BugC], _),
 
     filter_bugs_dont_break_hive_move([BugR, BugC], PMT, Filtered2),
     append(Filtered1, Filtered2, Filtered3),
@@ -75,9 +75,9 @@ filter_bugs_dont_break_hive_move_only_one(_, [], []).
 
 filter_bugs_dont_break_hive_move_only_one([BugR, BugC], [[PMRH, PMCH]|_], Filtered1) :-
     cell(Bug, BugR, BugC, Color, StackPosition, true),
-    make_move(cell(Bug, BugR, BugC, Color, StackPosition, true), [PMRH, PMCH]),
+    make_move(cell(Bug, BugR, BugC, Color, StackPosition, true), [PMRH, PMCH], _),
     try_move([BugR, BugC], Filtered1),
-    make_move(cell(Bug, PMRH, PMCH, Color, StackPosition, true), [BugR, BugC]),
+    make_move(cell(Bug, PMRH, PMCH, Color, StackPosition, true), [BugR, BugC], _),
     Filtered1 = [_|_].
 
 filter_bugs_dont_break_hive_move_only_one([BugR, BugC], [[_, _]|PMT], Filtered2) :-

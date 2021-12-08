@@ -29,9 +29,9 @@ real_valid_moves(cell(Bug, Row, Column, Color, StackPosition, InGame), RealValid
 trying_moves(cell(_, _, _, _, _, _), [], []).
 
 trying_moves(cell(Bug, Row, Column, Color, StackPosition, InGame), [[MovesHR, MovesHC]| MovesT], FilterMoves) :-
-    make_move(cell(Bug, Row, Column, Color, StackPosition, InGame), [MovesHR, MovesHC]),
+    make_move(cell(Bug, Row, Column, Color, StackPosition, InGame), [MovesHR, MovesHC], _),
     try_move([MovesHR, MovesHC], ValidMoves1),
-    make_move(cell(Bug, MovesHR, MovesHC, Color, StackPosition, InGame), [Row, Column]),
+    make_move(cell(Bug, MovesHR, MovesHC, Color, StackPosition, InGame), [Row, Column], _),
 
     trying_moves(cell(Bug, Row, Column, Color, StackPosition, InGame), MovesT, ValidMoves2),
     append(ValidMoves1, ValidMoves2, FilterMoves).
@@ -46,9 +46,9 @@ try_move(_, []).
 trying_moves_only_one(cell(_, _, _, _, _, _), [], []).
 
 trying_moves_only_one(cell(Bug, Row, Column, Color, StackPosition, InGame), [[MovesHR, MovesHC]| MovesT], X) :-
-    make_move(cell(Bug, Row, Column, Color, StackPosition, InGame), [MovesHR, MovesHC]),
+    make_move(cell(Bug, Row, Column, Color, StackPosition, InGame), [MovesHR, MovesHC], _),
     try_move([MovesHR, MovesHC], ValidMoves1),
-    make_move(cell(Bug, MovesHR, MovesHC, Color, StackPosition, InGame), [Row, Column]),
+    make_move(cell(Bug, MovesHR, MovesHC, Color, StackPosition, InGame), [Row, Column], _),
     trying_moves_only_one_2(ValidMoves1, cell(Bug, Row, Column, Color, StackPosition, InGame), [[MovesHR, MovesHC]| MovesT], X).
 
 trying_moves_only_one_2([_|_], cell(_, _, _, _, _, _), [[MovesHR, MovesHC]| _], [[MovesHR, MovesHC]]).

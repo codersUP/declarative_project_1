@@ -16,25 +16,25 @@
 
 make_play_ai(Color, [put, BugToPut, [LocationR, LocationC]]) :-
     select_cell_to_put(Color, BugToPut, [BugToPut, R, C, Color, Sp]),
-    make_move(cell(BugToPut, R, C, Color, Sp, false), [LocationR, LocationC]),
+    make_move(cell(BugToPut, R, C, Color, Sp, false), [LocationR, LocationC], SP_greater),
 
     retract(last_move(cell(_, _, _, _, _, _))),
-    assertz(last_move(cell(BugToPut, LocationR, LocationC, Color, Sp, true))).    
+    assertz(last_move(cell(BugToPut, LocationR, LocationC, Color, SP_greater, true))).    
 
 make_play_ai(Color, [move, [Bug, R, C, Color, Sp], [LocationR, LocationC]]) :-
-    make_move(cell(Bug, R, C, Color, Sp, true), [LocationR, LocationC]),
+    make_move(cell(Bug, R, C, Color, Sp, true), [LocationR, LocationC], SP_greater),
 
     retract(last_move(cell(_, _, _, _, _, _))),
-    assertz(last_move(cell(Bug, LocationR, LocationC, Color, Sp, true))).
+    assertz(last_move(cell(Bug, LocationR, LocationC, Color, SP_greater, true))).
 
 
 make_play_ai(_, [power, [_, _, _, _, _], [BugToApplyPowerR, BugToApplyPowerC], [LocationR, LocationC]]) :-
     cell(BugP, BugToApplyPowerR, BugToApplyPowerC, BugColor, BugSp, true),
 
-    make_move(cell(BugP, BugToApplyPowerR, BugToApplyPowerC, BugColor, BugSp, true), [LocationR, LocationC]),
+    make_move(cell(BugP, BugToApplyPowerR, BugToApplyPowerC, BugColor, BugSp, true), [LocationR, LocationC], SP_greater),
 
     retract(last_move(cell(_, _, _, _, _, _))),
-    assertz(last_move(cell(BugP, LocationR, LocationC, BugColor, BugSp, true))).
+    assertz(last_move(cell(BugP, LocationR, LocationC, BugColor, SP_greater, true))).
 
 
 retract_play_ai(Color, [put, _, _]) :-
@@ -52,12 +52,12 @@ retract_play_ai(Color, [put, _, _]) :-
 retract_play_ai(Color, [move, [Bug, R, C, Color, _], _]) :-
     last_move(cell(Bug, LocationR, LocationC, Color, Sp, true)),
 
-    make_move(cell(Bug, LocationR, LocationC, Color, Sp, true), [R, C]).
+    make_move(cell(Bug, LocationR, LocationC, Color, Sp, true), [R, C], _).
 
 retract_play_ai(Color, [power, [_, _, _, _, _], [BugToApplyPowerR, BugToApplyPowerC], _]) :-
     last_move(cell(Bug, LocationR, LocationC, Color, Sp, true)),
 
-    make_move(cell(Bug, LocationR, LocationC, Color, Sp, true), [BugToApplyPowerR, BugToApplyPowerC]).
+    make_move(cell(Bug, LocationR, LocationC, Color, Sp, true), [BugToApplyPowerR, BugToApplyPowerC], _).
 
 
 
@@ -69,11 +69,6 @@ heuristic(Color, _, Play, _, X) :-
     retract(last_move(cell(_, _, _, _, _, _))),
     assertz(last_move(cell(LB, LR, LC, LColor, LSp, LInGame))),
     heuristic2(Result, Color, X).
-
-heuristic2(X, X, 100).
-heuristic2(Result, Color, -100) :-
-    not(Result = continue),
-    not(Result = Color).
 
 heuristic(Color, _, Play, 0, Points) :-
     last_move(cell(LB, LR, LC, LColor, LSp, LInGame)),
@@ -105,6 +100,12 @@ heuristic(Color, Turn, Play, Depth, Points) :-
     assertz(last_move(cell(LB, LR, LC, LColor, LSp, LInGame))),
 
     Points is NoMoves - RivalPoints.
+
+
+heuristic2(X, X, 100).
+heuristic2(Result, Color, -100) :-
+    not(Result = continue),
+    not(Result = Color).
 
 
 best_play_ai(Color, Turn, Depth, Points, Play) :-

@@ -79,10 +79,9 @@ begin_play(human, Color, Turn) :-
     select_play(Color, Turn).
 
 begin_play(ai, Color, Turn) :-
-    write("hola"),
     best_play_ai(Color, Turn, 0, _, Play),
-    write(Play + "\n").
-    % make_play_ai(Color, Play).
+    write(Play + "\n"),
+    make_play_ai(Color, Play).
 
 
 select_play(Color, Turn) :-
@@ -108,10 +107,10 @@ play(put, Color, Turn) :-
     write("Colocation selected: " + [ColocationR, ColocationC] + "\n"),
 
     select_cell_to_put(Color, Bug, [B, R, C, Color, Sp]),
-    make_move(cell(B, R, C, Color, Sp, false), [ColocationR, ColocationC]),
+    make_move(cell(B, R, C, Color, Sp, false), [ColocationR, ColocationC], SP_greater),
 
     retract(last_move(cell(_, _, _, _, _, _))),
-    assertz(last_move(cell(B, ColocationR, ColocationC, Color, Sp, true))).
+    assertz(last_move(cell(B, ColocationR, ColocationC, Color, SP_greater, true))).
 
 play(move, Color, _) :-
     bug_can_move(Color, BugCanMove),
@@ -126,10 +125,10 @@ play(move, Color, _) :-
     nth1(MoveToDo, RealValidMoves, [MoveR, MoveC]),
     write("Move selected: " + [MoveR, MoveC] + "\n"),
 
-    make_move(cell(B, R, C, Color, Sp, true), [MoveR, MoveC]),
+    make_move(cell(B, R, C, Color, Sp, true), [MoveR, MoveC], SP_greater),
 
     retract(last_move(cell(_, _, _, _, _, _))),
-    assertz(last_move(cell(B, MoveR, MoveC, Color, Sp, true))).
+    assertz(last_move(cell(B, MoveR, MoveC, Color, SP_greater, true))).
 
 play(power, Color, _) :-
     bug_can_power(Color, BugCanPower),
@@ -152,7 +151,7 @@ play(power, Color, _) :-
 
     cell(BugP, BugR, BugC, BugColor, BugSp, true),
 
-    make_move(cell(BugP, BugR, BugC, BugColor, BugSp, true), [ColocationR, ColocationC]),
+    make_move(cell(BugP, BugR, BugC, BugColor, BugSp, true), [ColocationR, ColocationC], SP_greater),
 
     retract(last_move(cell(_, _, _, _, _, _))),
-    assertz(last_move(cell(BugP, ColocationR, ColocationC, BugColor, BugSp, true))).
+    assertz(last_move(cell(BugP, ColocationR, ColocationC, BugColor, SP_greater, true))).
