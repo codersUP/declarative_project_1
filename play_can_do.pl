@@ -15,15 +15,14 @@ play_can_do(Color, Plays) :-
 can_move(Color, []) :-
     cell(queen, _, _, Color, _, false).
 
-can_move(Color, []) :-
+can_move(Color, X) :-
     cell(queen, _, _, Color, _, true),
     bug_can_move(Color, BugCanMove),
-    BugCanMove = [].
+    can_move2(BugCanMove, X).
 
-can_move(Color, [move]) :-
-    cell(queen, _, _, Color, _, true),
-    bug_can_move(Color, BugCanMove),
-    not(BugCanMove = []).
+can_move2([], []).
+
+can_move2([_|_], [move]).
 
 
 can_put(Color, []) :-
@@ -36,12 +35,11 @@ can_put(Color, [put]) :-
 can_power(Color, []) :-
     cell(queen, _, _, Color, _, false).
 
-can_power(Color, []) :-
+can_power(Color, X) :-
     cell(queen, _, _, Color, _, true),
     bug_can_power(Color, BugCanPower),
-    BugCanPower = [].
+    can_power2(BugCanPower, X).
 
-can_power(Color, [power]) :-
-    cell(queen, _, _, Color, _, true),
-    bug_can_power(Color, BugCanPower),
-    not(BugCanPower = []).
+can_power2([], []).
+
+can_power2([_|_], [power]).
