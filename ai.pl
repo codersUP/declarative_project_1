@@ -12,6 +12,7 @@
 :- use_module(power).
 :- use_module(utils).
 :- use_module(stack).
+:- use_module(valid_moves).
 
 
 make_play_ai(Color, [put, BugToPut, [LocationR, LocationC]]) :-
@@ -54,7 +55,7 @@ retract_play_ai(Color, [move, [Bug, R, C, Color, _], _]) :-
 
     make_move(cell(Bug, LocationR, LocationC, Color, Sp, true), [R, C], _).
 
-retract_play_ai(Color, [power, [_, _, _, _, _], [BugToApplyPowerR, BugToApplyPowerC], _]) :-
+retract_play_ai(_, [power, [_, _, _, _, _], [BugToApplyPowerR, BugToApplyPowerC], _]) :-
     last_move(cell(Bug, LocationR, LocationC, Color, Sp, true)),
 
     make_move(cell(Bug, LocationR, LocationC, Color, Sp, true), [BugToApplyPowerR, BugToApplyPowerC], _).
@@ -67,7 +68,37 @@ heuristic(Color, X) :-
 
 heuristic(Color, Points) :-
     opposite_color(Color, RivalColor),
-    how_many_no_moves(RivalColor, Points).
+    how_many_no_moves(RivalColor, Point1),
+    
+    neighbors_queen(Color, NeighborsMyQueen),
+    neighbors_queen(RivalColor, NeighborsRivalQueen),
+    Point2 is NeighborsMyQueen - NeighborsRivalQueen,
+    
+    amount_movement(Color, MyMovements),
+    amount_movement(RivalColor, RivalMovements),
+    Point3 is MyMovements - RivalMovements,
+
+    findall([R, C, Sp], cell(_, R, C, Color, Sp, false), InHand),
+    length(InHand, AmountInHand),
+    Point4 is -2 * AmountInHand,
+
+    Points is Point1 + Point2 + Point3 + Point4.
+
+neighbors_queen(Color, 0) :-
+    not(cell(queen, _, _, Color, _, true)).
+
+neighbors_queen(Color, X) :-
+    cell(queen, R, C, Color, Sp, true),
+    neighbors(cell(queen, R, C, Color, Sp, true), N),
+    length(N, X).
+
+amount_movement(Color, 0) :-
+    not(cell(_, _, _, Color, _, true)).
+
+amount_movement(Color, X) :-
+    bug_can_move(Color, Y),
+    length(Y, X).
+    
 
 heuristic2(X, X, 100).
 heuristic2(Result, Color, -100) :-
@@ -82,7 +113,21 @@ best_play_ai(Color, Turn, Depth, Points, Play) :-
 
 select_best_play(_, _, _, [], -999999, []).
 
+select_best_play(Color, Turn, 0, [PlayH| PlayT], Point, Play) :-
+    last_move(cell(LB, LR, LC, LColor, LSp, LInGame)),
+    make_play_ai(Color, PlayH),
+    
+    heuristic(Color, Point1),
+    
+    retract_play_ai(Color, PlayH),
+    retract(last_move(cell(_, _, _, _, _, _))),
+    assertz(last_move(cell(LB, LR, LC, LColor, LSp, LInGame))),!,
+
+    select_best_play(Color, Turn, 0, PlayT, Point2, Play2),
+    select_play_more_points(Point1, PlayH, Point2, Play2, Point, Play).
+
 select_best_play(Color, Turn, Depth, [PlayH| PlayT], Point, Play) :-
+    Depth > 0,
     last_move(cell(LB, LR, LC, LColor, LSp, LInGame)),
     make_play_ai(Color, PlayH),
 
@@ -90,42 +135,38 @@ select_best_play(Color, Turn, Depth, [PlayH| PlayT], Point, Play) :-
 
     retract_play_ai(Color, PlayH),
     retract(last_move(cell(_, _, _, _, _, _))),
-    assertz(last_move(cell(LB, LR, LC, LColor, LSp, LInGame))),
+    assertz(last_move(cell(LB, LR, LC, LColor, LSp, LInGame))),!,
 
-    select_best_play_2(Color, Turn, Depth, Point1, PlayH, X),
-    
     select_best_play(Color, Turn, Depth, PlayT, Point2, Play2),
-    select_play_more_points(X, PlayH, Point2, Play2, Point, Play).
+    select_play_more_points(Color, Turn, Depth, Point1, PlayH, Point2, Play2, PointR, PlayR),
+    select_play_more_points(PointR, PlayR, Point2, Play2, Point, Play).
 
 
-select_best_play_2(_, _, _, 100, _, 100).
+select_play_more_points(Point1, _,Point2, Play2, Point2, Play2) :-
+    not(Point1 > Point2).
 
-select_best_play_2(_, _, _, -100, _, -100).
+select_play_more_points(Point1, Play1, Point2, _, Point1, Play1) :-
+    Point1 > Point2.
 
-select_best_play_2(_, _, 0, Point1, _, Point1).
+select_play_more_points(_, _, _, Point1, _, Point2, Play2, Point2, Play2) :-
+    not(Point1 > Point2).
 
-select_best_play_2(Color, Turn, Depth, Point1, Play, X) :-
-    Depth > 0,
-    
+select_play_more_points(Color, Turn, Depth, Point1, Play1, Point2, _, X, Play1) :-
+    Point1 > Point2,
+
     last_move(cell(LB, LR, LC, LColor, LSp, LInGame)),
-    make_play_ai(Color, Play),
+    make_play_ai(Color, Play1),
     
     D1 is Depth - 1,
     T1 is Turn + 1,
     opposite_color(Color, RivalColor),
     best_play_ai(RivalColor, T1, D1, RivalPoints, _),
 
-    retract_play_ai(Color, Play),
+    retract_play_ai(Color, Play1),
     retract(last_move(cell(_, _, _, _, _, _))),
     assertz(last_move(cell(LB, LR, LC, LColor, LSp, LInGame))),
 
     X is Point1 - RivalPoints.
-
-select_play_more_points(Point1, Play1, Point2, _, Point1, Play1) :-
-    Point1 > Point2.
-
-select_play_more_points(Point1, _, Point2, Play2, Point2, Play2) :-
-    not(Point1 > Point2).
 
 
 how_many_no_moves(Color, NoMoves) :-
