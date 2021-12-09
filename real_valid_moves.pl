@@ -23,7 +23,7 @@ real_valid_moves(cell(Bug, Row, Column, Color, StackPosition, InGame), []) :-
 
 real_valid_moves(cell(Bug, Row, Column, Color, StackPosition, InGame), RealValidMoves) :- 
     can_move(cell(Bug, Row, Column, Color, StackPosition, InGame)),
-    valid_moves(cell(Bug, Row, Column, Color, StackPosition, InGame), RealValidMoves).
+    valid_moves(Bug, cell(Bug, Row, Column, Color, StackPosition, InGame), RealValidMoves).
     % trying_moves(cell(Bug, Row, Column, Color, StackPosition, InGame), ValidMoves, RealValidMoves).
     
 trying_moves(cell(_, _, _, _, _, _), [], []).

@@ -10,58 +10,82 @@
 %      (1, -1) (1, 0)
 
 % cell(BugType, Row, Column, Color, StackPosition, InGame)
-:- module(valid_moves, [valid_moves/2, neighbors/2, bug_type_of_neighbors/2]).
+:- module(valid_moves, [valid_moves/3, neighbors/2, bug_type_of_neighbors/2]).
 :- use_module(game).
 :- use_module(stack).
 
 
-valid_moves(cell(queen, Row, Column, _, _, _), ValidMoves) :-
-    valid_moves_queen(cell(_, Row, Column, _, _, _), ValidMoves).
-valid_moves(cell(beetle, Row, Column, _, _, _), ValidMoves) :-
-    valid_moves_beetle(cell(_, Row, Column, _, _, _), ValidMoves).
-valid_moves(cell(grasshopper, Row, Column, _, _, _), ValidMoves) :-
-    valid_moves_grasshopper(cell(_, Row, Column, _, _, _), ValidMoves).
-valid_moves(cell(spider, Row, Column, _, _, _), ValidMoves) :-
-    valid_moves_spider(cell(_, Row, Column, _, _, _), ValidMoves).
-valid_moves(cell(ant, Row, Column, _, _, _), ValidMoves) :-
-    valid_moves_ant(cell(_, Row, Column, _, _, _), ValidMoves).
-valid_moves(cell(ladybug, Row, Column, _, _, _), ValidMoves) :-
-    valid_moves_ladybug(cell(_, Row, Column, _, _, _), ValidMoves).
-valid_moves(cell(pillbug, Row, Column, _, _, _), ValidMoves) :-
-    valid_moves_queen(cell(_, Row, Column, _, _, _), ValidMoves).
-valid_moves(cell(mosquito, Row, Column, _, StackPosition, _), ValidMoves) :-
-    valid_moves_mosquito(cell(_, Row, Column, _, StackPosition, _), ValidMoves).
+valid_moves(queen, cell(Bug, Row, Column, Color, Sp, InGame), ValidMoves) :-
+    valid_moves_queen(cell(Bug, Row, Column, Color, Sp, InGame), ValidMoves).
+
+valid_moves(beetle, cell(Bug, Row, Column, Color, Sp, InGame), ValidMoves) :-
+    valid_moves_beetle(cell(Bug, Row, Column, Color, Sp, InGame), ValidMoves).
+
+valid_moves(grasshopper, cell(Bug, Row, Column, Color, Sp, InGame), ValidMoves) :-
+    valid_moves_grasshopper(cell(Bug, Row, Column, Color, Sp, InGame), ValidMoves).
+
+valid_moves(spider, cell(Bug, Row, Column, Color, Sp, InGame), ValidMoves) :-
+    valid_moves_spider(cell(Bug, Row, Column, Color, Sp, InGame), ValidMoves).
+
+valid_moves(ant, cell(Bug, Row, Column, Color, Sp, InGame), ValidMoves) :-
+    valid_moves_ant(cell(Bug, Row, Column, Color, Sp, InGame), ValidMoves).
+
+valid_moves(ladybug, cell(Bug, Row, Column, Color, Sp, InGame), ValidMoves) :-
+    valid_moves_ladybug(cell(Bug, Row, Column, Color, Sp, InGame), ValidMoves).
+
+valid_moves(pillbug, cell(Bug, Row, Column, Color, Sp, InGame), ValidMoves) :-
+    valid_moves_queen(cell(Bug, Row, Column, Color, Sp, InGame), ValidMoves).
+
+valid_moves(mosquito, cell(Bug, Row, Column, Color, Sp, InGame), ValidMoves) :-
+    valid_moves_mosquito(cell(Bug, Row, Column, Color, Sp, InGame), ValidMoves).
 
 
-valid_moves_queen(cell(_, Row, Column, _, _, _), ValidMoves) :-
+valid_moves_queen(cell(Bug, Row, Column, Color, Sp, InGame), ValidMoves) :-
+    retract(cell(Bug, Row, Column, Color, Sp, InGame)),
     R1 is Row - 1, C1 is Column,     moves_queen([Row, Column], [R1, C1], VM1),
     R2 is Row - 1, C2 is Column + 1, moves_queen([Row, Column], [R2, C2], VM2),
     R3 is Row,     C3 is Column - 1, moves_queen([Row, Column], [R3, C3], VM3),
     R4 is Row,     C4 is Column + 1, moves_queen([Row, Column], [R4, C4], VM4),
     R5 is Row + 1, C5 is Column - 1, moves_queen([Row, Column], [R5, C5], VM5),
     R6 is Row + 1, C6 is Column,     moves_queen([Row, Column], [R6, C6], VM6),
+    assertz(cell(Bug, Row, Column, Color, Sp, InGame)),
     append([VM1, VM2, VM3, VM4, VM5, VM6], ValidMoves).
 
 moves_queen([R, C], [RD, CD], []) :-
     cell(_, RD, CD, _, _, true);
-    not(can_enter([R, C], [RD, CD])).
+    not(can_enter([R, C], [RD, CD]));
+    neighbors(cell(_, RD, CD, _, _, _), X),
+    X = [].
 
 moves_queen([R, C], [RD, CD], [[RD, CD]]) :-
     not(cell(_, RD, CD, _, _, true)),
-    can_enter([R, C], [RD, CD]).
+    can_enter([R, C], [RD, CD]),
+    neighbors(cell(_, RD, CD, _, _, _), X),
+    X = [_|_].
 
 
-valid_moves_beetle(cell(_, Row, Column, _, _, _), ValidMoves) :-
-    R1 is Row - 1, C1 is Column,   
-    R2 is Row - 1, C2 is Column + 1,
-    R3 is Row,     C3 is Column - 1,
-    R4 is Row,     C4 is Column + 1,
-    R5 is Row + 1, C5 is Column - 1,
-    R6 is Row + 1, C6 is Column,
-    append([[[R1, C1], [R2, C2], [R3, C3], [R4, C4], [R5, C5], [R6, C6]]], ValidMoves).
+valid_moves_beetle(cell(Bug, Row, Column, Color, Sp, InGame), ValidMoves) :-
+    retract(cell(Bug, Row, Column, Color, Sp, InGame)),
+    R1 is Row - 1, C1 is Column,    moves_beetle([R1, C1], VM1),
+    R2 is Row - 1, C2 is Column + 1,moves_beetle([R2, C2], VM2),
+    R3 is Row,     C3 is Column - 1,moves_beetle([R3, C3], VM3),
+    R4 is Row,     C4 is Column + 1,moves_beetle([R4, C4], VM4),
+    R5 is Row + 1, C5 is Column - 1,moves_beetle([R5, C5], VM5),
+    R6 is Row + 1, C6 is Column,    moves_beetle([R6, C6], VM6),
+    assertz(cell(Bug, Row, Column, Color, Sp, InGame)),
+    append([VM1, VM2, VM3, VM4, VM5, VM6], ValidMoves).
+
+moves_beetle([R, C], []) :-
+    neighbors(cell(_, R, C, _, _, _), X),
+    X = [].
+
+moves_beetle([R, C], [[R, C]]) :-
+    neighbors(cell(_, R, C, _, _, _), X),
+    X = [_|_].
 
 
-valid_moves_grasshopper(cell(_, Row, Column, _, _, _), ValidMoves) :-
+valid_moves_grasshopper(cell(Bug, Row, Column, Color, Sp, InGame), ValidMoves) :-
+    retract(cell(Bug, Row, Column, Color, Sp, InGame)),
     % left
     grasshopper_line(cell(_, Row, Column, _, _, _), 0, -1, VM1),
     % right
@@ -75,11 +99,21 @@ valid_moves_grasshopper(cell(_, Row, Column, _, _, _), ValidMoves) :-
     % down right
     grasshopper_line(cell(_, Row, Column, _, _, _), 1,  0, VM6),
 
+    assertz(cell(Bug, Row, Column, Color, Sp, InGame)),
+
     append([VM1, VM2, VM3, VM4, VM5, VM6], ValidMoves).
+
+grasshopper_line(cell(_, Row, Column, _, _, _), R, C, []) :-
+    R1 is Row + R, C1 is Column + C,
+    not(cell(_, R1, C1, _, _, true)),
+    neighbors(cell(_, R1, C1, _, _, _), X),
+    X = [].
 
 grasshopper_line(cell(_, Row, Column, _, _, _), R, C, [[R1, C1]]) :-
     R1 is Row + R, C1 is Column + C,
-    not(cell(_, R1, C1, _, _, true)).
+    not(cell(_, R1, C1, _, _, true)),
+    neighbors(cell(_, R1, C1, _, _, _), X),
+    X = [_|_].
     
 grasshopper_line(cell(_, Row, Column, _, _, _), R, C, ValidMoves) :-
     R1 is Row + R, C1 is Column + C,
@@ -87,8 +121,10 @@ grasshopper_line(cell(_, Row, Column, _, _, _), R, C, ValidMoves) :-
     grasshopper_line(cell(_, R1, C1, _, _, _), R, C, ValidMoves).
 
 
-valid_moves_spider(cell(_, Row, Column, _, _, _), ValidMoves) :-
-    spider_3_moves(cell(_, Row, Column, _, _, _), 3, ValidMoves).
+valid_moves_spider(cell(Bug, Row, Column, Color, Sp, InGame), ValidMoves) :-
+    retract(cell(Bug, Row, Column, Color, Sp, InGame)),
+    spider_3_moves(cell(Bug, Row, Column, Color, Sp, InGame), 3, ValidMoves),
+    assertz(cell(Bug, Row, Column, Color, Sp, InGame)).
 
 spider_3_moves(cell(_, Row, Column, _, _, _), 0, [[Row, Column]]).
 
@@ -142,8 +178,10 @@ neighbors(cell(_, Row, Column, _, _, _), Neighbors) :-
     R6 is Row + 1, C6 is Column,     (not(cell(_, R6, C6, _, _, true)) -> append([VM5], Neighbors); append([[[R6, C6]], VM5], Neighbors)).
 
 
-valid_moves_ant(cell(_, Row, Column, _, _, _), ValidMoves) :-
-    ant_moves(cell(_, Row, Column, _, _, _), [], ValidMoves).
+valid_moves_ant(cell(Bug, Row, Column, Color, Sp, InGame), ValidMoves) :-
+    retract(cell(Bug, Row, Column, Color, Sp, InGame)),
+    ant_moves(cell(Bug, Row, Column, Color, Sp, InGame), [], ValidMoves),
+    assertz(cell(Bug, Row, Column, Color, Sp, InGame)).
 
 ant_moves(cell(_, Row, Column, _, _, _), Moves, ValidMoves) :-
     R1 is Row - 1, C1 is Column,
@@ -183,8 +221,10 @@ ant_moves2([R, C], Moves, Result) :-
 
 
 
-valid_moves_ladybug(cell(_, Row, Column, _, _, _), ValidMoves) :-
-    ladybug_3_moves(cell(_, Row, Column, _, _, _), 3, ValidMoves).
+valid_moves_ladybug(cell(Bug, Row, Column, Color, Sp, InGame), ValidMoves) :-
+    retract(cell(Bug, Row, Column, Color, Sp, InGame)),
+    ladybug_3_moves(cell(_, Row, Column, _, _, _), 3, ValidMoves),
+    assertz(cell(Bug, Row, Column, Color, Sp, InGame)).
 
 ladybug_3_moves(cell(_, Row, Column, _, _, _), 0, [[Row, Column]]).
 
@@ -252,25 +292,25 @@ ladybug_3_moves_air(R, C, Jump, ValidMoves):-
     ladybug_3_moves(cell(_, R, C, _, _, _), Jump, ValidMoves).
 
 
-valid_moves_mosquito(cell(_, Row, Column, _, StackPosition, _), ValidMoves) :-
-    StackPosition > 0,
-    valid_moves_beetle(cell(_, Row, Column, _, _, _), ValidMoves).
+valid_moves_mosquito(cell(Bug, Row, Column, Color, Sp, InGame), ValidMoves) :-
+    Sp > 0,
+    valid_moves_beetle(cell(Bug, Row, Column, Color, Sp, InGame), ValidMoves).
 
-valid_moves_mosquito(cell(_, Row, Column, _, StackPosition, _), ValidMoves) :-
-    StackPosition = 0,
+valid_moves_mosquito(cell(Bug, Row, Column, Color, Sp, InGame), ValidMoves) :-
+    Sp = 0,
     neighbors(cell(_, Row, Column, _, _, _), Neighbors),
     bug_type_of_neighbors(Neighbors, BugTypeNeighbors),
-    valid_moves_mosquito2(cell(_, Row, Column, _, _, _), BugTypeNeighbors, ValidMoves).
+    valid_moves_mosquito2(cell(Bug, Row, Column, Color, Sp, InGame), BugTypeNeighbors, ValidMoves).
 
 
 valid_moves_mosquito2(cell(_, _, _, _, _, _), [], []).
 
-valid_moves_mosquito2(cell(_, Row, Column, _, _, _), [mosquito|BugTypeT], Moves) :-
-    valid_moves_mosquito2(cell(_, Row, Column, _, _, _), BugTypeT, Moves).
+valid_moves_mosquito2(cell(Bug, Row, Column, Color, Sp, InGame), [mosquito|BugTypeT], Moves) :-
+    valid_moves_mosquito2(cell(Bug, Row, Column, Color, Sp, InGame), BugTypeT, Moves).
 
-valid_moves_mosquito2(cell(_, Row, Column, _, _, _), [BugTypeH|BugTypeT], Moves) :-
-    valid_moves(cell(BugTypeH, Row, Column, _, _, _), Moves1),
-    valid_moves_mosquito2(cell(_, Row, Column, _, _, _), BugTypeT, Moves2),
+valid_moves_mosquito2(cell(Bug, Row, Column, Color, Sp, InGame), [BugTypeH|BugTypeT], Moves) :-
+    valid_moves(BugTypeH, cell(Bug, Row, Column, Color, Sp, InGame), Moves1),
+    valid_moves_mosquito2(cell(Bug, Row, Column, Color, Sp, InGame), BugTypeT, Moves2),
     append(Moves1, Moves2, Moves3),
     sort(Moves3, Moves).
 

@@ -100,7 +100,7 @@ begin_play(human, Color, Turn) :-
     select_play(Color, Turn).
 
 begin_play(ai, Color, Turn) :-
-    best_play_ai(Color, Turn, 1, _, Play),
+    best_play_ai(Color, Turn, 0, _, Play),
     write(Play + "\n"),
     make_play_ai(Color, Play).
 
