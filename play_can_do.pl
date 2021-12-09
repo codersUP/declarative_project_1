@@ -4,9 +4,13 @@
 :- use_module(game).
 :- use_module(bug_can_move).
 :- use_module(bug_can_power).
+:- use_module(win).
 
+play_can_do(_, []) :-
+    game_finished(_).
 
 play_can_do(Color, Plays) :-
+    not(game_finished(_)),
     can_put(Color, Put),
     can_move(Color, Move),
     can_power(Color, Power),
