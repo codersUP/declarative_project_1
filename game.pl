@@ -16,6 +16,27 @@
 
 
 cell(queen, 0,  0, white,  -1, false).
+% cell(ant, 1,  0, white,  0, true).
+% cell(ant, 2,  0, white,  0, true).
+% cell(ant, 3,  0, white,  0, true).
+% cell(ant, 4,  0, white,  0, true).
+% cell(ant, 5,  0, white,  0, true).
+% cell(ant, 6,  0, white,  0, true).
+% cell(ant, 7,  0, white,  0, true).
+% cell(ant, 8,  0, white,  0, true).
+% cell(ant, 9,  0, white,  0, true).
+% cell(ant, 10,  0, white,  0, true).
+% cell(ant, 11,  0, white,  0, true).
+% cell(ant, 12,  0, white,  0, true).
+% cell(ant, 13,  0, white,  0, true).
+% cell(ant, 14,  0, white,  0, true).
+% cell(ant, 15,  0, white,  0, true).
+% cell(ant, 16,  0, white,  0, true).
+% cell(ant, 17,  0, white,  0, true).
+% cell(ant, 18,  0, white,  0, true).
+% cell(ant, 19,  0, white,  0, true).
+% cell(ant, 20,  0, white,  0, true).
+% cell(ant, 21,  0, white,  0, true).
 cell(queen, 0,  0, black,  -1, false).
 
 :- dynamic cell/6.
@@ -79,7 +100,7 @@ begin_play(human, Color, Turn) :-
     select_play(Color, Turn).
 
 begin_play(ai, Color, Turn) :-
-    best_play_ai(Color, Turn, 0, _, Play),
+    best_play_ai(Color, Turn, 1, _, Play),
     write(Play + "\n"),
     make_play_ai(Color, Play).
 

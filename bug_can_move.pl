@@ -25,7 +25,7 @@ bug_can_move2([[B, R, C, Color, Sp]|CellsT], BugCanMove) :-
     
     
 bug_can_move3([B, R, C, Color, Sp], X) :-
-    real_valid_moves_only_one(cell(B, R, C, Color, Sp, true), RealValidMoves),
+    real_valid_moves(cell(B, R, C, Color, Sp, true), RealValidMoves),
     bug_can_move3_2(RealValidMoves, [B, R, C, Color, Sp], X).
 
 bug_can_move3_2([], _, []).
@@ -35,7 +35,7 @@ bug_can_move3_2([_|_], X, [X]).
 bug_can_move2_only_one([], []).
 
 bug_can_move2_only_one([[B, R, C, Color, Sp]|CellsT], X) :-
-    real_valid_moves_only_one(cell(B, R, C, Color, Sp, true), RealValidMoves),
+    real_valid_moves(cell(B, R, C, Color, Sp, true), RealValidMoves),
     bug_can_move2_only_one_2(RealValidMoves, [[B, R, C, Color, Sp]|CellsT], X).
 
 bug_can_move2_only_one_2([_|_], [[B, R, C, Color, Sp]|_], [[B, R, C, Color, Sp]]).
