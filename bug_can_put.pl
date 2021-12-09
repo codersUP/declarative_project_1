@@ -2,7 +2,7 @@
 :- use_module(game).
 
 bug_can_put(Color, Turn, [queen]) :-
-    Turn > 6,
+    Turn > 2,
     not(cell(queen, _, _, Color, _, true)).
 
 bug_can_put(Color, _, BugCanPut) :-
