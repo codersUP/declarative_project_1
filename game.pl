@@ -86,7 +86,7 @@ enter_game() :-
     change_turn(_),
     advance_turn(),
 
-    write("----------------------------------------------------------\n"),
+    write("----------------------------------------------------------\n"),!,
     enter_game().
 
 enter_game_2(tie) :-
@@ -100,7 +100,7 @@ begin_play(human, Color, Turn) :-
     select_play(Color, Turn).
 
 begin_play(ai, Color, Turn) :-
-    best_play_ai(Color, Turn, 0, _, Play),
+    best_play_ai(Color, Turn, 4, _, Play),
     write(Play + "\n"),
     make_play_ai(Color, Play).
 
@@ -116,7 +116,7 @@ select_play(Color, Turn) :-
 
 play(put, Color, Turn) :-
     bug_can_put(Color, Turn, BugCanPut),
-    write("Select bug tu put: " + BugCanPut + "\n"),
+    write("Select bug to put: " + BugCanPut + "\n"),
     read(BugToPut),
     nth1(BugToPut, BugCanPut, Bug),
     write("Bug selected: " + Bug + "\n"),
