@@ -155,10 +155,12 @@ select_play_more_points(Point1, Play1, Point2, _, Point1, Play1) :-
     Point1 > Point2.
 
 select_play_more_points(_, _, _, Point1, _, Point2, Play2, Point2, Play2) :-
-    not(Point1 > Point2).
+    Point2R is Point2 + 100,
+    not(Point1 > Point2R).
 
 select_play_more_points(Color, Turn, Depth, Point1, Play1, Point2, _, X, Play1) :-
-    Point1 > Point2,
+    Point2R is Point2 + 100,
+    Point1 > Point2R,
 
     last_move(cell(LB, LR, LC, LColor, LSp, LInGame)),
     make_play_ai(Color, Play1),
