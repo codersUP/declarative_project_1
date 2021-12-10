@@ -76,13 +76,15 @@ begin_play(ai, Color, Turn) :-
     make_play_ai(Color, Play).
 
 
-select_play(Color, _) :-
-    play_can_do(Color, PlayCanDo),
-    PlayCanDo = [],
-    write("No play to do\n").
-
 select_play(Color, Turn) :-
     play_can_do(Color, PlayCanDo),
+    select_play2(Color, Turn, PlayCanDo).
+
+select_play2(_, _, []) :-
+    write("No play to do\n").
+    
+select_play2(Color, Turn, PlayCanDo) :-
+    PlayCanDo = [_|_],
     write("Select play to do " + PlayCanDo + "\n"),
     read(PlayToDo),
     nth1(PlayToDo, PlayCanDo, Play),
