@@ -14,57 +14,28 @@
 :- use_module(ai).
 :- use_module(players).
 
-
-cell(queen, 0,  0, white,  -1, false).
-% cell(ant, 1,  0, white,  0, true).
-% cell(ant, 2,  0, white,  0, true).
-% cell(ant, 3,  0, white,  0, true).
-% cell(ant, 4,  0, white,  0, true).
-% cell(ant, 5,  0, white,  0, true).
-% cell(ant, 6,  0, white,  0, true).
-% cell(ant, 7,  0, white,  0, true).
-% cell(ant, 8,  0, white,  0, true).
-% cell(ant, 9,  0, white,  0, true).
-% cell(ant, 10,  0, white,  0, true).
-% cell(ant, 11,  0, white,  0, true).
-% cell(ant, 12,  0, white,  0, true).
-% cell(ant, 13,  0, white,  0, true).
-% cell(ant, 14,  0, white,  0, true).
-% cell(ant, 15,  0, white,  0, true).
-% cell(ant, 16,  0, white,  0, true).
-% cell(ant, 17,  0, white,  0, true).
-% cell(ant, 18,  0, white,  0, true).
-% cell(ant, 19,  0, white,  0, true).
-% cell(ant, 20,  0, white,  0, true).
-% cell(ant, 21,  0, white,  0, true).
-cell(queen, 0,  0, black,  -1, false).
-
 :- dynamic cell/6.
-
-color_now(white).
-
 :- dynamic color_now/1.
-
-turn(1).
-
 :- dynamic turn/1.
-
-last_move(cell(quee, 0, 0, white, -1, false)).
-
 :- dynamic last_move/1.
-
-player(1, human).
-player(2, human).
-
 :- dynamic player/2.
 
 init_game() :-
-    Bugs = [ant, grasshopper, beetle, spider],
-    Amounts = [3, 3, 2, 2],
+    remove_all_cells(),
+    remove_all_states(),
+
+    Bugs = [queen, ant, grasshopper, beetle, spider],
+    Amounts = [1, 3, 3, 2, 2],
 
     init_game_cells(Bugs, Amounts),
     select_expantions(),
 
+    assert(color_now(white)),
+    assert(turn(1)),
+    assert(last_move(cell(quee, 0, 0, white, -1, false))),
+    assert(player(1, human)),
+    assert(player(2, human)),
+    
     select_players(),
     enter_game().
 
@@ -104,6 +75,11 @@ begin_play(ai, Color, Turn) :-
     write(Play + "\n"),
     make_play_ai(Color, Play).
 
+
+select_play(Color, _) :-
+    play_can_do(Color, PlayCanDo),
+    PlayCanDo = [],
+    write("No play to do\n").
 
 select_play(Color, Turn) :-
     play_can_do(Color, PlayCanDo),
