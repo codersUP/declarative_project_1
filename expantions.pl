@@ -14,7 +14,7 @@ select_expantions() :-
 select_expantions2([]).
 
 select_expantions2([[B, A]|Tail]) :-
-    x_expantion(B, A),
+    x_expantion(B, A),!,
     select_expantions2(Tail).
 
 x_expantion(Bug, Amount) :-
@@ -23,7 +23,7 @@ x_expantion(Bug, Amount) :-
     write("Use" + Bug + "expantion?\n" + Selections + "\n"),
 
     read(Selection),
-    nth1(Selection, Selections, Selected),
+    nth1(Selection, Selections, Selected),!,
 
     activate_expantion(Selected, Bug, Amount).
 
