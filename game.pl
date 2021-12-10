@@ -13,6 +13,7 @@
 :- use_module(expantions).
 :- use_module(ai).
 :- use_module(players).
+:- use_module(paint).
 
 :- dynamic cell/6.
 :- dynamic color_now/1.
@@ -50,6 +51,7 @@ enter_game() :-
     turn(Turn),
     player_turn(Turn, Player),
     player(Player, PlayerType),
+    paint_board(),
 
     write("Player turn: " + Player + " Player type: " + PlayerType + " Color: " + Color + " Turn: " + Turn + "\n"),
     begin_play(PlayerType, Color, Turn),
