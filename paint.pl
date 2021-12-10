@@ -6,8 +6,14 @@ even_row(false).
 :- dynamic even_row/1.
 
 paint_board():-
+    check_not_even(),
     findall(X, cell(X, _, _, _, _, true), P),
     paint_board2(P).
+
+check_not_even():- even_row(false), !.
+check_not_even():- 
+    retract(even_row(true)),
+    assert(even_row(false)).
 
 paint_board2([_|_]):-
     is_min(Min_row),
@@ -16,21 +22,28 @@ paint_board2([_|_]):-
     is_max_to_the_right(Rr, Cr),
     R is Min_row - 1,
     TopR is Max_row + 1,
-    amount_of_cells(R, Rl, Cl, Rr, Cr, FirstC, LastC, Amount),
+    NCl is Cl - 1,
+    NCr is Cr + 1,
+    amount_of_cells(R, Rl, NCl, Rr, NCr, FirstC, LastC, Amount),
     paint(R, FirstC, LastC, TopR, Amount),
     finish(Amount).
 
 paint_board2([]):- paint(-1, -1, 1, 1, 3).
 
-finish(_):- even_row(false).
+finish(_):- even_row(true).
 finish(Amount):-
-    even_row(true),
-    A is Amount - 1,
-    paint_base(A).
-
-paint(R, C, TopC, TopR, Amount):-
-    not(TopR < R),
     even_row(false),
+    A is Amount - 1,
+    write("   "),
+    paint_base_first(A),
+    write("\n   "),
+    paint_base_second(A),
+    write("\n").
+
+paint(R, _, _, TopR, _):- R > TopR.
+paint(R, C, TopC, TopR, Amount):-
+    even_row(false), !,
+    not(R > TopR),
     paint_top(Amount),
     paint_center(R, C, TopC),
     paint_base(Amount),
@@ -40,9 +53,13 @@ paint(R, C, TopC, TopR, Amount):-
     paint(NR, C, NTopC, TopR, Amount).
 
 paint(R, C, TopC, TopR, Amount):-
+    even_row(true), !,
     not(R > TopR),
-    even_row(true),
-    paint_center(R, C, TopC),
+    write("   "),
+    paint_center_first(R, C, TopC),
+    write("|\n   "),
+    paint_center_second(R, C, TopC),
+    write("|\n"),
     change_row(),
     NR is R + 1,
     NC is C - 1,
@@ -77,13 +94,22 @@ paint_center(R, C, T):-
 
 paint_center_first(_, C, T):- C > T.
 paint_center_first(R, C, T):-
-    not(C > T),
-    find_cell(R, C, Color, Bug),
-    write("| " + Color + " "),
-    print_bug(Bug),
+    not(C > T), 
+    write("| "),
+    fill_with_piece(R, C),
     write(" "),
     NC is C + 1,
     paint_center_first(R, NC, T).
+
+fill_with_piece(R, C):-
+    find_cell(R, C, Color, Bug), !,
+    print_color(Color),
+    write(" "),
+    print_bug(Bug).
+fill_with_piece(_, _):- write("   ").
+
+print_color(white):- write("W").
+print_color(black):- write("B").
 
 paint_center_second(_, C, T):- C > T.
 paint_center_second(R, C, T):-
@@ -113,7 +139,7 @@ paint_base_second(Amount):-
     Amount > 0,
     write("  \\ / "),
     NAmount is Amount - 1,
-    paint_base_first(NAmount).
+    paint_base_second(NAmount).
 
 change_row():-
     even_row(true),
@@ -160,15 +186,27 @@ print_number(N):-
 
 print_number_in_one(N):-
     N < 10, !,
-    write(N).
+    int_to_char(N, C),
+    put(C).
 print_number_in_one(N):-
     NN is mod(N, 10),
-    write(NN).
+    int_to_char(NN, C),
+    put(C).
 
 print_number_in_two(N):-
     N < 10, !, 
-    write(" " + N).
-print_number_in_two(N):- write(N).
+    write(" "),
+    int_to_char(N, C),
+    put(C).
+print_number_in_two(N):- 
+    X is N // 10,
+    Y is mod(N, 10),
+    int_to_char(X, C1),
+    put(C1),
+    int_to_char(Y, C2),
+    put(C2).
+
+int_to_char(X, C):- C is X + 48.
 
 is_min(R):-
     findall(Row, cell(_, Row, _, _, _, true), P),
@@ -204,6 +242,6 @@ is_max_to_the_right(R, C):-
     choose_max(Q, R).
 
 amount_of_cells(R, Rl, Cl, Rr, Cr, FirstC, LastC, Amount):-
-    FirstC is (R - Rl) // 2 + Cl,
-    LastC is (R - Rr) // 2 + Cr,
+    FirstC is (Rl - R) // 2 + Cl,
+    LastC is (Rr - R + 1) // 2 + Cr,
     Amount is LastC - FirstC + 1. 
