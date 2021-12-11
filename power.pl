@@ -7,22 +7,21 @@
 :- use_module(stack).
 :- use_module(make_move).
 :- use_module(real_valid_moves).
+:- use_module(can_move).
 
 
 pillbug_power_can_apply_only_one(cell(_, Row, Column, _, _, true), PowerCanApply) :-
     neighbors(cell(_, Row, Column, _, _, _), Neighbors),
     filter_list_by_stack_only_one(Neighbors, NeighborsWithOnlyOne),
     filter_list_not_last_move(NeighborsWithOnlyOne, FilteredNotLastMove),
-    not_neighbors(cell(_, Row, Column, _, _, _), NotNeighbors),
-    filter_bugs_dont_break_hive_only_one(FilteredNotLastMove, NotNeighbors, PowerCanApply).
+    filter_bugs_dont_break_hive_only_one(FilteredNotLastMove, PowerCanApply).
 
 
 pillbug_power_can_apply(cell(_, Row, Column, _, _, true), PowerCanApply) :-
     neighbors(cell(_, Row, Column, _, _, _), Neighbors),
     filter_list_by_stack_only_one(Neighbors, NeighborsWithOnlyOne),
     filter_list_not_last_move(NeighborsWithOnlyOne, FilteredNotLastMove),
-    not_neighbors(cell(_, Row, Column, _, _, _), NotNeighbors),
-    filter_bugs_dont_break_hive(FilteredNotLastMove, NotNeighbors, PowerCanApply).
+    filter_bugs_dont_break_hive(FilteredNotLastMove, PowerCanApply).
 
     
 filter_list_not_last_move([], []).
@@ -42,43 +41,27 @@ was_last_move(Row, Column, [[Row, Column]]) :-
     not((Row = R, Column = C)).
 
 
-filter_bugs_dont_break_hive([], _, []).
+filter_bugs_dont_break_hive([], []).
 
-filter_bugs_dont_break_hive([[BugRH,BugCH]|BugsTail], PossbleMoves, FilteredBugs) :-
-    filter_bugs_dont_break_hive_move([BugRH, BugCH], PossbleMoves, Filtered1),
-    filter_bugs_dont_break_hive(BugsTail, PossbleMoves, Filtered2),
+filter_bugs_dont_break_hive([[BugRH,BugCH]|BugsTail], FilteredBugs) :-
+    filter_bugs_dont_break_hive2([BugRH, BugCH], Filtered1),
+    filter_bugs_dont_break_hive(BugsTail, Filtered2),
     append(Filtered1, Filtered2, FilteredBugs).
 
+filter_bugs_dont_break_hive2([BugRH, BugCH], []) :-
+    cell(Bug, BugRH, BugCH, Color, StackPosition, true),
+    not(can_move(cell(Bug, BugRH, BugCH, Color, StackPosition, true))).
 
-filter_bugs_dont_break_hive_move(_, [], []).
+filter_bugs_dont_break_hive2([BugRH, BugCH], [[BugRH, BugCH]]) :-
+    cell(Bug, BugRH, BugCH, Color, StackPosition, true),
+    can_move(cell(Bug, BugRH, BugCH, Color, StackPosition, true)).
 
-filter_bugs_dont_break_hive_move([BugR, BugC], [[PMRH, PMCH]|PMT], FilteredMoves) :-
-    cell(Bug, BugR, BugC, Color, StackPosition, true),
-    make_move(cell(Bug, BugR, BugC, Color, StackPosition, true), [PMRH, PMCH], _),
-    try_move([BugR, BugC], Filtered1),
-    make_move(cell(Bug, PMRH, PMCH, Color, StackPosition, true), [BugR, BugC], _),
 
-    filter_bugs_dont_break_hive_move([BugR, BugC], PMT, Filtered2),
-    append(Filtered1, Filtered2, Filtered3),
-    sort(Filtered3, FilteredMoves).
+filter_bugs_dont_break_hive_only_one([], []).
 
-filter_bugs_dont_break_hive_only_one([], _, []).
-
-filter_bugs_dont_break_hive_only_one([[BugRH,BugCH]|_], PossbleMoves, Filtered1) :-
-    filter_bugs_dont_break_hive_move_only_one([BugRH, BugCH], PossbleMoves, Filtered1),
+filter_bugs_dont_break_hive_only_one([[BugRH,BugCH]|_], [BugRH, BugCH]) :-
+    filter_bugs_dont_break_hive2([BugRH, BugCH], Filtered1),
     Filtered1 = [_|_].
 
-filter_bugs_dont_break_hive_only_one([[_,_]|BugsTail], PossbleMoves, Filtered2) :-
-    filter_bugs_dont_break_hive_only_one(BugsTail, PossbleMoves, Filtered2).
-
-filter_bugs_dont_break_hive_move_only_one(_, [], []).
-
-filter_bugs_dont_break_hive_move_only_one([BugR, BugC], [[PMRH, PMCH]|_], Filtered1) :-
-    cell(Bug, BugR, BugC, Color, StackPosition, true),
-    make_move(cell(Bug, BugR, BugC, Color, StackPosition, true), [PMRH, PMCH], _),
-    try_move([BugR, BugC], Filtered1),
-    make_move(cell(Bug, PMRH, PMCH, Color, StackPosition, true), [BugR, BugC], _),
-    Filtered1 = [_|_].
-
-filter_bugs_dont_break_hive_move_only_one([BugR, BugC], [[_, _]|PMT], Filtered2) :-
-    filter_bugs_dont_break_hive_move_only_one([BugR, BugC], PMT, Filtered2).
+filter_bugs_dont_break_hive_only_one([[_,_]|BugsTail], Filtered2) :-
+    filter_bugs_dont_break_hive_only_one(BugsTail, Filtered2).
